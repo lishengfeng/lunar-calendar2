@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lunarcalendar/ui/screens/sign_in_screen.dart';
 
 class RootScreen extends StatefulWidget {
   @override
@@ -8,6 +9,6 @@ class RootScreen extends StatefulWidget {
 class _RootScreenState extends State<RootScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return SignInScreen();
   }
 }
