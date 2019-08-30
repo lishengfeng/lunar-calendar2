@@ -14,8 +14,10 @@ class _RootScreenState extends State<RootScreen> {
       stream: FirebaseAuth.instance.onAuthStateChanged,
       builder: (BuildContext context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return new Container(
-            color: Colors.white,
+          return Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
           );
         } else {
           if (snapshot.hasData) {
