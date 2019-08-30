@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lunarcalendar/utils/sign_in.dart';
+import 'package:lunarcalendar/utils/auth.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
