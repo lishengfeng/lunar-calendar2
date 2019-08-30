@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lunarcalendar/utils/sign_in.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -97,7 +98,19 @@ class _SignInPageState extends State<SignInScreen> {
   Widget _signInButton() {
     return OutlineButton(
       splashColor: Colors.grey,
-      onPressed: () {},
+      onPressed: () {
+        signInWithGoogle().whenComplete(() {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                return Container(
+                  child: Text("You've signed in."),
+                );
+              },
+            ),
+          );
+        });
+      },
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       highlightElevation: 0,
       borderSide: BorderSide(color: Colors.grey),
