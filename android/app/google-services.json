@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "873383764909",
+    "firebase_url": "https://lunar-calendar-s-1561836454167.firebaseio.com",
+    "project_id": "lunar-calendar-s-1561836454167",
+    "storage_bucket": "lunar-calendar-s-1561836454167.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873383764909:android:0e53d2c71f418687",
+        "android_client_info": {
+          "package_name": "io.github.lishengfeng.lunarcalendar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "873383764909-ujc3aaurudcfi731po78b0qa7fq1dfq0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.github.lishengfeng.lunarcalendar",
+            "certificate_hash": "93fbf371a6d9c241eba1a59d38abd3cde63a26d1"
+          }
+        },
+        {
+          "client_id": "873383764909-povnn7i2dicvlvco2o379keqv8k3ga2k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBA_itqDUuwH49LYbhIBuaNfYO-R3iFiWA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "873383764909-povnn7i2dicvlvco2o379keqv8k3ga2k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
