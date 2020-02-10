@@ -12,6 +12,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   Choice _selectedChoice = choices[0]; // The app's "state".
+  List<String> items = [];
 
   void _select(Choice choice) {
     setState(() { // Causes the app to rebuild with the new _selectedChoice.
@@ -29,7 +30,8 @@ class _MainScreenState extends State<MainScreen> {
             PopupMenuButton<Choice>( // overflow menu
               onSelected: _select,
               itemBuilder: (BuildContext context) {
-                return choices.skip(0).map<PopupMenuItem<Choice>>((Choice choice) {
+                return choices.skip(0).map<PopupMenuItem<Choice>>((
+                    Choice choice) {
                   return PopupMenuItem<Choice>(
                     value: choice,
                     child: Text(choice.title),
@@ -39,17 +41,30 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ],
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ChoiceCard(choice: _selectedChoice),
+        body: Container(
+          child: _buildContent(),
         ),
       ),
     );
+  }
+
+  Widget _buildContent() {
+    if (items.length == 0) {
+      return new Center(
+          child: Text('You do not have any events yet. Please try to add some.'),
+      );
+    } else {
+      return new Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ChoiceCard(choice: _selectedChoice),
+      );
+    }
   }
 }
 
 class Choice {
   const Choice({ this.title, this.icon });
+
   final String title;
   final IconData icon;
 }
@@ -66,7 +81,10 @@ class ChoiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle textStyle = Theme.of(context).textTheme.headline;
+    final TextStyle textStyle = Theme
+        .of(context)
+        .textTheme
+        .headline;
     return Card(
       color: Colors.white,
       child: Center(
