@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lunarcalendar/ui/screens/sign_in_screen.dart';
+import 'package:lunarcalendar/ui/screens/main_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class RootScreen extends StatefulWidget {
@@ -21,11 +22,8 @@ class _RootScreenState extends State<RootScreen> {
           );
         } else {
           if (snapshot.hasData) {
-//            return new MainScreen(
+            return new MainScreen(
 //              firebaseUser: snapshot.data,
-//            );
-            return Container(
-              child: Text("You've already signed in."),
             );
           } else {
             return SignInScreen();
