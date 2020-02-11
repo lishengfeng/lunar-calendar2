@@ -1,4 +1,3 @@
-import 'package:dataclass/dataclass.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:collection';
 
@@ -11,7 +10,6 @@ class Reminder {
 
 enum RepeatType { NO_REPEAT, MONTHLY, ANNUALLY }
 
-@dataClass
 class LunarEvent {
   final Uuid id = Uuid();
   String summary = "";
