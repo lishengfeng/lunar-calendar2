@@ -4,6 +4,7 @@ import "package:lunarcalendar/ui/screens/walk_screen.dart";
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.getInstance().then((prefs) {
     runApp(MyApp(prefs));
   });
