@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lunarcalendar/ui/screens/main_screen.dart';
 import 'package:lunarcalendar/utils/auth.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -103,9 +104,7 @@ class _SignInPageState extends State<SignInScreen> {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) {
-                return Container(
-                  child: Text("You've signed in."),
-                );
+                return new MainScreen();
               },
             ),
           );
