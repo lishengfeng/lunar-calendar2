@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:lunarcalendar/ui/screens/add_lunar_event_screen.dart';
 
 // This app is a stateful, it tracks the user's current choice.
 class MainScreen extends StatefulWidget {
@@ -15,7 +16,8 @@ class _MainScreenState extends State<MainScreen> {
   List<String> items = [];
 
   void _select(Choice choice) {
-    setState(() { // Causes the app to rebuild with the new _selectedChoice.
+    setState(() {
+      // Causes the app to rebuild with the new _selectedChoice.
       _selectedChoice = choice;
     });
   }
@@ -27,11 +29,13 @@ class _MainScreenState extends State<MainScreen> {
         appBar: AppBar(
           title: const Text('Lunar Calendar'),
           actions: <Widget>[
-            PopupMenuButton<Choice>( // overflow menu
+            PopupMenuButton<Choice>(
+              // overflow menu
               onSelected: _select,
               itemBuilder: (BuildContext context) {
-                return choices.skip(0).map<PopupMenuItem<Choice>>((
-                    Choice choice) {
+                return choices
+                    .skip(0)
+                    .map<PopupMenuItem<Choice>>((Choice choice) {
                   return PopupMenuItem<Choice>(
                     value: choice,
                     child: Text(choice.title),
@@ -46,7 +50,10 @@ class _MainScreenState extends State<MainScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            // Add your onPressed code here!
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddLunarEventScreen()),
+            );
           },
           child: Icon(Icons.add),
         ),
@@ -57,7 +64,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget _buildContent() {
     if (items.length == 0) {
       return new Center(
-          child: Text('You do not have any events yet. Please try to add some.'),
+        child: Text('You do not have any events yet. Please try to add some.'),
       );
     } else {
       return new Padding(
@@ -69,7 +76,7 @@ class _MainScreenState extends State<MainScreen> {
 }
 
 class Choice {
-  const Choice({ this.title, this.icon });
+  const Choice({this.title, this.icon});
 
   final String title;
   final IconData icon;
@@ -81,16 +88,13 @@ const List<Choice> choices = <Choice>[
 ];
 
 class ChoiceCard extends StatelessWidget {
-  const ChoiceCard({ Key key, this.choice }) : super(key: key);
+  const ChoiceCard({Key key, this.choice}) : super(key: key);
 
   final Choice choice;
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle textStyle = Theme
-        .of(context)
-        .textTheme
-        .headline;
+    final TextStyle textStyle = Theme.of(context).textTheme.headline;
     return Card(
       color: Colors.white,
       child: Center(
