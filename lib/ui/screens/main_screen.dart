@@ -44,6 +44,12 @@ class _MainScreenState extends State<MainScreen> {
         body: Container(
           child: _buildContent(),
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            // Add your onPressed code here!
+          },
+          child: Icon(Icons.add),
+        ),
       ),
     );
   }
