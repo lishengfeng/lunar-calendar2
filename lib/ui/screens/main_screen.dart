@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:lunarcalendar/ui/screens/add_lunar_event_screen.dart';
+import 'package:lunarcalendar/ui/screens/lunar_event_screen.dart';
 
 // This app is a stateful, it tracks the user's current choice.
 class MainScreen extends StatefulWidget {
@@ -52,7 +52,7 @@ class _MainScreenState extends State<MainScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AddLunarEventScreen()),
+              MaterialPageRoute(builder: (context) => LunarEventScreen()),
             );
           },
           child: Icon(Icons.add),

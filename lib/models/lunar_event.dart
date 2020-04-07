@@ -10,6 +10,8 @@ class Reminder {
 
 enum RepeatType { NO_REPEAT, MONTHLY, ANNUALLY }
 
+enum ReminderMethod {POP_UP, EMAIL}
+
 class LunarEvent {
   final Uuid id = Uuid();
   String summary = "";
