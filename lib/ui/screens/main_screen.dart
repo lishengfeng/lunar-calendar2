@@ -15,7 +15,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   Choice _selectedChoice = choices[0]; // The app's "state".
-  SortedList<LunarEvent> items;
+  SortedList<LunarEvent> lunarEvents;
 
   void _select(Choice choice) {
     setState(() {
@@ -26,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
-    items = new SortedList((a, b) => a.compareTo(b));
+    lunarEvents = new SortedList((a, b) => a.compareTo(b));
     LunarEvent lunarEvent1 = new LunarEvent(
         summary: '山生日',
         start: '04-17',
@@ -65,8 +65,8 @@ class _MainScreenState extends State<MainScreen> {
         time: "21:00");
     lunarEvent2.addReminder(reminder3);
     lunarEvent2.addReminder(reminder4);
-    items.add(lunarEvent1);
-    items.add(lunarEvent2);
+    lunarEvents.add(lunarEvent1);
+    lunarEvents.add(lunarEvent2);
     super.initState();
   }
 
@@ -110,15 +110,35 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildContent() {
-    if (items.length == 0) {
+    if (lunarEvents.length == 0) {
       return new Center(
         child: Text('You do not have any events yet. Please try to add some.'),
       );
     } else {
-      return new Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ChoiceCard(choice: _selectedChoice),
-      );
+      return ListView.builder(
+          itemCount: lunarEvents.length,
+          itemBuilder: (context, index) {
+            final item = lunarEvents[index];
+            return Card(
+              child: ListTile(
+                title: Text(item.summary),
+                subtitle: Text(item.start + ' to ' + item.end),
+                trailing: MaterialButton(
+                  onPressed: () {
+                    lunarEvents.removeAt(index);
+                    setState(() {});
+                  },
+                  color: Colors.red,
+                  textColor: Colors.white,
+                  child: Icon(Icons.remove, size: 12),
+                  padding: EdgeInsets.all(6),
+                  shape: CircleBorder(),
+                  height: 5,
+                  minWidth: 1,
+                ),
+              ),
+            );
+          });
     }
   }
 }
@@ -134,27 +154,3 @@ const List<Choice> choices = <Choice>[
   Choice(title: 'Import', icon: Icons.import_export),
   Choice(title: 'Export', icon: Icons.import_export),
 ];
-
-class ChoiceCard extends StatelessWidget {
-  const ChoiceCard({Key key, this.choice}) : super(key: key);
-
-  final Choice choice;
-
-  @override
-  Widget build(BuildContext context) {
-    final TextStyle textStyle = Theme.of(context).textTheme.headline;
-    return Card(
-      color: Colors.white,
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Icon(choice.icon, size: 128.0, color: textStyle.color),
-            Text(choice.title, style: textStyle),
-          ],
-        ),
-      ),
-    );
-  }
-}
