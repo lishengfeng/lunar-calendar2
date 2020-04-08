@@ -6,7 +6,7 @@ import 'package:lunarcalendar/ui/screens/event_notification_screen.dart';
 class LunarEventScreen extends StatefulWidget {
   final LunarEvent lunarEvent;
 
-  LunarEventScreen({Key key,@required this.lunarEvent}) : super(key: key);
+  LunarEventScreen({Key key, @required this.lunarEvent}) : super(key: key);
 
   @override
   _LunarEventScreenState createState() => _LunarEventScreenState();
@@ -194,18 +194,19 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                           fontSize: 16.0,
                         ),
                       ),
-                      MaterialButton(
-                        onPressed: () {
-                          _navigateToAddNotification(context);
-                        },
-                        color: Colors.green,
-                        textColor: Colors.white,
-                        child: Icon(Icons.add, size: 12),
-                        padding: EdgeInsets.all(6),
-                        shape: CircleBorder(),
-                        height: 5,
-                        minWidth: 1,
-                      ),
+                      if (widget.lunarEvent.reminders.length < 5)
+                        MaterialButton(
+                          onPressed: () {
+                            _navigateToAddNotification(context);
+                          },
+                          color: Colors.green,
+                          textColor: Colors.white,
+                          child: Icon(Icons.add, size: 12),
+                          padding: EdgeInsets.all(6),
+                          shape: CircleBorder(),
+                          height: 5,
+                          minWidth: 1,
+                        ),
                     ],
                   ),
                   SizedBox(
@@ -344,10 +345,12 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
   // A method that launches the EventNotificationScreen and awaits the
   // result from Navigator.pop.
   void _navigateToAddNotification(BuildContext context) async {
-    final result = await Navigator.push(context,
-        MaterialPageRoute(builder: (context) => EventNotificationScreen(
-          reminder: new Reminder(),
-        )));
+    final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EventNotificationScreen(
+                  reminder: new Reminder(),
+                )));
     if (null != result) {
       this.reminders.add(result);
     }
