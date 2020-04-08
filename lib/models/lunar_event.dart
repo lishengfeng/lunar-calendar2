@@ -2,7 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 class Reminder {
-  final Uuid id = Uuid();
+  Uuid id = Uuid();
   ReminderMethod method;
   int count;
   ReminderType type;
@@ -14,6 +14,21 @@ class Reminder {
     this.type,
     this.time,
   });
+
+  Reminder.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        method = json['method'],
+        count = json['count'],
+        type = json['type'],
+        time = json['time'];
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'method': method,
+        'count': count,
+        'type': type,
+        'time': time,
+      };
 
   @override
   int get hashCode => id.hashCode;
@@ -34,14 +49,14 @@ enum ReminderMethod { POP_UP, EMAIL }
 enum ReminderType { DAY, WEEK }
 
 class LunarEvent extends Comparable<LunarEvent> {
-  final Uuid id = Uuid();
+  Uuid id = Uuid();
   String summary;
   String start;
   String end;
   String location;
   int repeat;
   RepeatType repeatType;
-  final List<Reminder> reminders = [];
+  List<Reminder> reminders = [];
 
   LunarEvent(
       {this.summary,
@@ -50,6 +65,27 @@ class LunarEvent extends Comparable<LunarEvent> {
       this.location,
       this.repeat,
       this.repeatType = RepeatType.ANNUALLY});
+
+  LunarEvent.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        summary = json['summary'],
+        start = json['start'],
+        end = json['end'],
+        location = json['location'],
+        repeat = json['repeat'],
+        repeatType = json['repeatType'],
+        reminders = json['reminders'];
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'summary': summary,
+        'start': start,
+        'end': end,
+        'location': location,
+        'repeat': repeat,
+        'repeatType': repeatType,
+        'reminders': reminders,
+      };
 
   @override
   bool operator ==(other) {
@@ -71,13 +107,5 @@ class LunarEvent extends Comparable<LunarEvent> {
       return this.summary.compareTo(other.summary);
     }
     return result;
-  }
-
-  void addReminder(Reminder reminder) {
-    this.reminders.add(reminder);
-  }
-
-  void removeReminder(Reminder reminder) {
-    reminders.remove(reminder);
   }
 }
