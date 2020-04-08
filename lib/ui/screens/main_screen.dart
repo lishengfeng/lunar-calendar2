@@ -41,14 +41,22 @@ class _MainScreenState extends State<MainScreen> {
               // overflow menu
               onSelected: _select,
               itemBuilder: (BuildContext context) {
-                return choices
-                    .skip(0)
-                    .map<PopupMenuItem<Choice>>((Choice choice) {
-                  return PopupMenuItem<Choice>(
+                var list = List<PopupMenuEntry<Choice>>();
+                choices.asMap().forEach((index, choice) {
+                  list.add(PopupMenuItem<Choice>(
                     value: choice,
-                    child: Text(choice.title),
-                  );
-                }).toList();
+                    child: ListTile(
+                      leading: Icon(choice.icon),
+                      title: Text(choice.title),
+                    ),
+                  ));
+                  if (index != choices.length - 1) {
+                    list.add(PopupMenuDivider(
+                      height: 5,
+                    ));
+                  }
+                });
+                return list;
               },
             ),
           ],
@@ -97,7 +105,8 @@ class _MainScreenState extends State<MainScreen> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => LunarEventScreen(
+                          builder: (context) =>
+                              LunarEventScreen(
                                 lunarEvent: lunarEvents[index],
                               )));
                 },
@@ -111,14 +120,14 @@ class _MainScreenState extends State<MainScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => LunarEventScreen(
+          builder: (context) =>
+              LunarEventScreen(
                 lunarEvent: new LunarEvent(),
               )),
     );
     if (null != result) {
       lunarEvents.add(result);
-      setState(() {
-      });
+      setState(() {});
     }
   }
 }
@@ -131,6 +140,6 @@ class Choice {
 }
 
 const List<Choice> choices = <Choice>[
-  Choice(title: 'Import', icon: Icons.import_export),
-  Choice(title: 'Export', icon: Icons.import_export),
+  Choice(title: 'Import', icon: Icons.cloud_download),
+  Choice(title: 'Export', icon: Icons.backup),
 ];
