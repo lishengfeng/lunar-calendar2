@@ -3,6 +3,10 @@ import 'package:intl/intl.dart';
 import 'package:lunarcalendar/models/lunar_event.dart';
 
 class EventNotificationScreen extends StatefulWidget {
+  Reminder reminder;
+
+  EventNotificationScreen({Key key, this.reminder}) : super(key: key);
+
   @override
   _EventNotificationScreenState createState() =>
       _EventNotificationScreenState();
@@ -10,7 +14,16 @@ class EventNotificationScreen extends StatefulWidget {
 
 class _EventNotificationScreenState extends State<EventNotificationScreen> {
   final _formKey = GlobalKey<FormState>();
-  ReminderMethod _reminderMethod = ReminderMethod.EMAIL;
+  ReminderMethod _reminderMethod;
+
+  @override
+  void initState() {
+    if (widget.reminder == null) {
+      widget.reminder = new Reminder();
+    }
+    _reminderMethod = widget.reminder.method ?? ReminderMethod.EMAIL;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,8 +82,9 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
                       labelText: 'days/weeks before',
                       hintText: 'e.g. 1d (1-27) or 1w (1-3)',
                       border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.all(8.0),//Control height
+                      contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
+                    initialValue: getDaysOrWeeksBeforeText(widget.reminder),
                     validator: (String str) {
                       if (!isValidBefore(str)) {
                         return "Invalid value";
@@ -86,8 +100,9 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
                       labelText: 'Remind time (24-hour format)',
                       hintText: 'e.g. 09:00',
                       border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.all(8.0),//Control height
+                      contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
+                    initialValue: widget.reminder.time,
                     keyboardType: TextInputType.datetime,
                     validator: (String str) {
                       if (!isValidTime(str)) {
@@ -184,5 +199,10 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
     } catch (error) {
       return false;
     }
+  }
+
+  String getDaysOrWeeksBeforeText(Reminder reminder) {
+    return reminder.count.toString() +
+        (reminder.type == ReminderType.DAY ? 'd' : 'w');
   }
 }

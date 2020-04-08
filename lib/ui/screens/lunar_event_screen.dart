@@ -5,6 +5,7 @@ import 'package:lunarcalendar/ui/screens/event_notification_screen.dart';
 
 class LunarEventScreen extends StatefulWidget {
   LunarEvent lunarEvent;
+
   LunarEventScreen({Key key, this.lunarEvent}) : super(key: key);
 
   @override
@@ -14,6 +15,7 @@ class LunarEventScreen extends StatefulWidget {
 class _LunarEventScreenState extends State<LunarEventScreen> {
   final _formKey = GlobalKey<FormState>();
   RepeatType _repeatType;
+  List<Reminder> reminders;
 
   @override
   void initState() {
@@ -21,6 +23,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
       widget.lunarEvent = new LunarEvent();
     }
     _repeatType = widget.lunarEvent.repeatType ?? RepeatType.ANNUALLY;
+    reminders = widget.lunarEvent.reminders;
     super.initState();
   }
 
@@ -196,6 +199,44 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                   SizedBox(
                     height: 8,
                   ),
+                  ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: reminders.length,
+                      itemBuilder: (context, index) {
+                        final item = reminders[index];
+                        return Card(
+                          child: ListTile(
+                            title: Text(getNotificationTitle(item)),
+                            subtitle: Text(getNotificationSubtitle(item)),
+                            trailing: MaterialButton(
+                              onPressed: () {
+                                reminders.removeAt(index);
+                                setState(() {});
+                              },
+                              color: Colors.red,
+                              textColor: Colors.white,
+                              child: Icon(Icons.remove, size: 12),
+                              padding: EdgeInsets.all(6),
+                              shape: CircleBorder(),
+                              height: 5,
+                              minWidth: 1,
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          EventNotificationScreen(
+                                            reminder: reminders[index],
+                                          )));
+                            },
+                          ),
+                        );
+                      }),
+                  SizedBox(
+                    height: 8,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
@@ -217,7 +258,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                         child: Text('Cancel'),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
@@ -225,6 +266,18 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
         ),
       ),
     );
+  }
+
+  String getNotificationTitle(Reminder reminder) {
+    return reminder.method == ReminderMethod.POP_UP ? 'Notification' : 'Email';
+  }
+
+  String getNotificationSubtitle(Reminder reminder) {
+    return reminder.count?.toString() +
+        ' ' +
+        (reminder.type == ReminderType.DAY ? "days" : "weeks") +
+        ' before at ' +
+        reminder.time;
   }
 
   bool isValidDate(str) {
