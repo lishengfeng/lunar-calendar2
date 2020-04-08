@@ -29,8 +29,8 @@ class _MainScreenState extends State<MainScreen> {
     lunarEvents = new SortedList((a, b) => a.compareTo(b));
     LunarEvent lunarEvent1 = new LunarEvent(
         summary: '山生日',
-        start: '04-17',
-        end: '04-17',
+        start: '04/17/1990',
+        end: '04/17/1990',
         location: '',
         repeat: 70,
         repeatType: RepeatType.ANNUALLY);
@@ -48,8 +48,8 @@ class _MainScreenState extends State<MainScreen> {
     lunarEvent1.addReminder(reminder2);
     LunarEvent lunarEvent2 = new LunarEvent(
         summary: '琦生日',
-        start: '01-25',
-        end: '01-25',
+        start: '01/25/1996',
+        end: '01/25/1996',
         location: '',
         repeat: 70,
         repeatType: RepeatType.ANNUALLY);
@@ -136,6 +136,14 @@ class _MainScreenState extends State<MainScreen> {
                   height: 5,
                   minWidth: 1,
                 ),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LunarEventScreen(
+                                lunarEvent: lunarEvents[index],
+                              )));
+                },
               ),
             );
           });

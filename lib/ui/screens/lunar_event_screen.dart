@@ -4,7 +4,8 @@ import 'package:lunarcalendar/models/lunar_event.dart';
 import 'package:lunarcalendar/ui/screens/event_notification_screen.dart';
 
 class LunarEventScreen extends StatefulWidget {
-  LunarEventScreen({Key key}) : super(key: key);
+  LunarEvent lunarEvent;
+  LunarEventScreen({Key key, this.lunarEvent}) : super(key: key);
 
   @override
   _LunarEventScreenState createState() => _LunarEventScreenState();
@@ -12,7 +13,16 @@ class LunarEventScreen extends StatefulWidget {
 
 class _LunarEventScreenState extends State<LunarEventScreen> {
   final _formKey = GlobalKey<FormState>();
-  RepeatType _repeatType = RepeatType.ANNUALLY;
+  RepeatType _repeatType;
+
+  @override
+  void initState() {
+    if (widget.lunarEvent == null) {
+      widget.lunarEvent = new LunarEvent();
+    }
+    _repeatType = widget.lunarEvent.repeatType ?? RepeatType.ANNUALLY;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +46,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
+                    initialValue: widget.lunarEvent.summary,
                   ),
                   SizedBox(
                     height: 8,
@@ -47,6 +58,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
+                    initialValue: widget.lunarEvent.start,
                     keyboardType: TextInputType.datetime,
                     validator: (String str) {
                       if (!isValidDate(str)) {
@@ -65,6 +77,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
+                    initialValue: widget.lunarEvent.end,
                     keyboardType: TextInputType.datetime,
                     validator: (String str) {
                       if (!isValidDate(str)) {
@@ -131,6 +144,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
+                    initialValue: widget.lunarEvent.repeat?.toString(),
                     keyboardType: TextInputType.number,
                     validator: (String val) {
                       if (!isInteger(val) || !isInRange(val, 1, 99)) {
@@ -150,6 +164,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
+                    initialValue: widget.lunarEvent.location,
                   ),
                   SizedBox(
                     height: 8,

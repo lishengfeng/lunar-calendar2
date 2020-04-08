@@ -35,11 +35,11 @@ enum ReminderType { DAY, WEEK }
 
 class LunarEvent extends Comparable<LunarEvent> {
   final Uuid id = Uuid();
-  String summary = "";
-  String start = "01-01";
-  String end = "01-01";
+  String summary;
+  String start;
+  String end;
   String location;
-  int repeat = 0;
+  int repeat;
   RepeatType repeatType = RepeatType.ANNUALLY;
   final List<Reminder> reminders = [];
 
@@ -64,7 +64,7 @@ class LunarEvent extends Comparable<LunarEvent> {
 
   @override
   int compareTo(LunarEvent other) {
-    final formatter = DateFormat('MM-dd');
+    final formatter = DateFormat('MM/dd/yyyy');
     var result =
         formatter.parse(this.start).compareTo(formatter.parse(other.start));
     if (result == 0) {
