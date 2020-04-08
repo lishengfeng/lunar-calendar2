@@ -3,12 +3,7 @@ import 'package:lunarcalendar/ui/screens/sign_in_screen.dart';
 import 'package:lunarcalendar/ui/screens/main_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class RootScreen extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => new _RootScreenState();
-}
-
-class _RootScreenState extends State<RootScreen> {
+class RootScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new StreamBuilder<FirebaseUser>(
