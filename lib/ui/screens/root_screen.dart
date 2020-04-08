@@ -22,7 +22,7 @@ class _RootScreenState extends State<RootScreen> {
           );
         } else {
           if (snapshot.hasData) {
-            return new MainScreen(
+            return MainScreen(
 //              firebaseUser: snapshot.data,
             );
           } else {

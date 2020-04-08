@@ -3,9 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:lunarcalendar/models/lunar_event.dart';
 
 class EventNotificationScreen extends StatefulWidget {
-  Reminder reminder;
+  final Reminder reminder;
 
-  EventNotificationScreen({Key key, this.reminder}) : super(key: key);
+  EventNotificationScreen({Key key, @required this.reminder}) : super(key: key);
 
   @override
   _EventNotificationScreenState createState() =>
@@ -18,10 +18,7 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
 
   @override
   void initState() {
-    if (widget.reminder == null) {
-      widget.reminder = new Reminder();
-    }
-    _reminderMethod = widget.reminder.method ?? ReminderMethod.EMAIL;
+    _reminderMethod = widget.reminder.method;
     super.initState();
   }
 
@@ -51,23 +48,23 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Radio(
-                        value: ReminderMethod.EMAIL,
-                        groupValue: _reminderMethod,
-                        onChanged: _handleReminderMethodChange,
-                      ),
-                      Text(
-                        'Email',
-                        style: TextStyle(
-                          fontSize: 12.0,
-                        ),
-                      ),
-                      Radio(
                         value: ReminderMethod.POP_UP,
                         groupValue: _reminderMethod,
                         onChanged: _handleReminderMethodChange,
                       ),
                       Text(
                         'Notification',
+                        style: TextStyle(
+                          fontSize: 12.0,
+                        ),
+                      ),
+                      Radio(
+                        value: ReminderMethod.EMAIL,
+                        groupValue: _reminderMethod,
+                        onChanged: _handleReminderMethodChange,
+                      ),
+                      Text(
+                        'Email',
                         style: TextStyle(
                           fontSize: 12.0,
                         ),
@@ -91,6 +88,7 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
                       }
                       return null;
                     },
+                    onSaved: saveDaysOrWeeksBefore,
                   ),
                   SizedBox(
                     height: 8,
@@ -110,6 +108,9 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
                       }
                       return null;
                     },
+                    onSaved: (String str) {
+                      widget.reminder.time = str;
+                    },
                   ),
                   SizedBox(
                     height: 8,
@@ -120,7 +121,8 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
                       RaisedButton(
                         onPressed: () {
                           if (_formKey.currentState.validate()) {
-                            Navigator.pop(context);
+                            _formKey.currentState.save();
+                            Navigator.pop(context, widget.reminder);
                           }
                         },
                         child: Text('Save'),
@@ -148,6 +150,7 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
   void _handleReminderMethodChange(ReminderMethod value) {
     setState(() {
       _reminderMethod = value;
+      widget.reminder.method = value;
     });
   }
 
@@ -202,7 +205,17 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
   }
 
   String getDaysOrWeeksBeforeText(Reminder reminder) {
+    if (null == reminder.count || null == reminder.type) return null;
     return reminder.count.toString() +
         (reminder.type == ReminderType.DAY ? 'd' : 'w');
+  }
+
+  void saveDaysOrWeeksBefore(String str) {
+    str = str.trim();
+    final type = str.substring(str.length - 1);
+    final strNum = str.substring(0, str.length - 1);
+    final count = int.parse(strNum);
+    widget.reminder.count = count;
+    widget.reminder.type = type == 'd' ? ReminderType.DAY : ReminderType.WEEK;
   }
 }

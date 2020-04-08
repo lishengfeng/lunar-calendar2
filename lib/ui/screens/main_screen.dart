@@ -27,46 +27,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     lunarEvents = new SortedList((a, b) => a.compareTo(b));
-    LunarEvent lunarEvent1 = new LunarEvent(
-        summary: '山生日',
-        start: '04/17/1990',
-        end: '04/17/1990',
-        location: '',
-        repeat: 70,
-        repeatType: RepeatType.ANNUALLY);
-    Reminder reminder1 = new Reminder(
-        method: ReminderMethod.EMAIL,
-        count: 1,
-        type: ReminderType.DAY,
-        time: "21:00");
-    Reminder reminder2 = new Reminder(
-        method: ReminderMethod.POP_UP,
-        count: 1,
-        type: ReminderType.DAY,
-        time: "21:00");
-    lunarEvent1.addReminder(reminder1);
-    lunarEvent1.addReminder(reminder2);
-    LunarEvent lunarEvent2 = new LunarEvent(
-        summary: '琦生日',
-        start: '01/25/1996',
-        end: '01/25/1996',
-        location: '',
-        repeat: 70,
-        repeatType: RepeatType.ANNUALLY);
-    Reminder reminder3 = new Reminder(
-        method: ReminderMethod.EMAIL,
-        count: 1,
-        type: ReminderType.DAY,
-        time: "21:00");
-    Reminder reminder4 = new Reminder(
-        method: ReminderMethod.POP_UP,
-        count: 1,
-        type: ReminderType.DAY,
-        time: "21:00");
-    lunarEvent2.addReminder(reminder3);
-    lunarEvent2.addReminder(reminder4);
-    lunarEvents.add(lunarEvent1);
-    lunarEvents.add(lunarEvent2);
     super.initState();
   }
 
@@ -98,10 +58,7 @@ class _MainScreenState extends State<MainScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => LunarEventScreen()),
-            );
+            _navigateToAddLunarEvent(context);
           },
           child: Icon(Icons.add),
         ),
@@ -147,6 +104,21 @@ class _MainScreenState extends State<MainScreen> {
               ),
             );
           });
+    }
+  }
+
+  void _navigateToAddLunarEvent(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => LunarEventScreen(
+                lunarEvent: new LunarEvent(),
+              )),
+    );
+    if (null != result) {
+      lunarEvents.add(result);
+      setState(() {
+      });
     }
   }
 }

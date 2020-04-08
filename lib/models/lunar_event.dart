@@ -3,13 +3,13 @@ import 'package:uuid/uuid.dart';
 
 class Reminder {
   final Uuid id = Uuid();
-  ReminderMethod method = ReminderMethod.POP_UP;
-  var count = 1;
-  ReminderType type = ReminderType.DAY;
-  String time = "09:00";
+  ReminderMethod method;
+  int count;
+  ReminderType type;
+  String time;
 
   Reminder({
-    this.method,
+    this.method = ReminderMethod.POP_UP,
     this.count,
     this.type,
     this.time,
@@ -40,7 +40,7 @@ class LunarEvent extends Comparable<LunarEvent> {
   String end;
   String location;
   int repeat;
-  RepeatType repeatType = RepeatType.ANNUALLY;
+  RepeatType repeatType;
   final List<Reminder> reminders = [];
 
   LunarEvent(
@@ -49,7 +49,7 @@ class LunarEvent extends Comparable<LunarEvent> {
       this.end,
       this.location,
       this.repeat,
-      this.repeatType});
+      this.repeatType = RepeatType.ANNUALLY});
 
   @override
   bool operator ==(other) {

@@ -4,9 +4,9 @@ import 'package:lunarcalendar/models/lunar_event.dart';
 import 'package:lunarcalendar/ui/screens/event_notification_screen.dart';
 
 class LunarEventScreen extends StatefulWidget {
-  LunarEvent lunarEvent;
+  final LunarEvent lunarEvent;
 
-  LunarEventScreen({Key key, this.lunarEvent}) : super(key: key);
+  LunarEventScreen({Key key,@required this.lunarEvent}) : super(key: key);
 
   @override
   _LunarEventScreenState createState() => _LunarEventScreenState();
@@ -19,10 +19,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
 
   @override
   void initState() {
-    if (widget.lunarEvent == null) {
-      widget.lunarEvent = new LunarEvent();
-    }
-    _repeatType = widget.lunarEvent.repeatType ?? RepeatType.ANNUALLY;
+    _repeatType = widget.lunarEvent.repeatType;
     reminders = widget.lunarEvent.reminders;
     super.initState();
   }
@@ -50,6 +47,9 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                       contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
                     initialValue: widget.lunarEvent.summary,
+                    onSaved: (String str) {
+                      widget.lunarEvent.summary = str;
+                    },
                   ),
                   SizedBox(
                     height: 8,
@@ -69,6 +69,9 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                       }
                       return null;
                     },
+                    onSaved: (String str) {
+                      widget.lunarEvent.start = str;
+                    },
                   ),
                   SizedBox(
                     height: 8,
@@ -87,6 +90,9 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                         return "Invalid date";
                       }
                       return null;
+                    },
+                    onSaved: (String str) {
+                      widget.lunarEvent.end = str;
                     },
                   ),
                   SizedBox(
@@ -155,6 +161,9 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                       }
                       return null;
                     },
+                    onSaved: (String str) {
+                      widget.lunarEvent.repeat = int.parse(str.trim());
+                    },
                   ),
                   SizedBox(
                     height: 8,
@@ -168,6 +177,9 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                       contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
                     initialValue: widget.lunarEvent.location,
+                    onSaved: (String str) {
+                      widget.lunarEvent.location = str.trim();
+                    },
                   ),
                   SizedBox(
                     height: 8,
@@ -184,7 +196,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                       ),
                       MaterialButton(
                         onPressed: () {
-                          _navigateToNotification(context);
+                          _navigateToAddNotification(context);
                         },
                         color: Colors.green,
                         textColor: Colors.white,
@@ -243,7 +255,8 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                       RaisedButton(
                         onPressed: () {
                           if (_formKey.currentState.validate()) {
-                            Navigator.pop(context);
+                            _formKey.currentState.save();
+                            Navigator.pop(context, widget.lunarEvent);
                           }
                         },
                         child: Text('Save'),
@@ -273,7 +286,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
   }
 
   String getNotificationSubtitle(Reminder reminder) {
-    return reminder.count?.toString() +
+    return (reminder.count?.toString() ?? "1") +
         ' ' +
         (reminder.type == ReminderType.DAY ? "days" : "weeks") +
         ' before at ' +
@@ -324,13 +337,19 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
   void _handleRepeatTypeChange(RepeatType value) {
     setState(() {
       _repeatType = value;
+      widget.lunarEvent.repeatType = value;
     });
   }
 
   // A method that launches the EventNotificationScreen and awaits the
   // result from Navigator.pop.
-  void _navigateToNotification(BuildContext context) async {
+  void _navigateToAddNotification(BuildContext context) async {
     final result = await Navigator.push(context,
-        MaterialPageRoute(builder: (context) => EventNotificationScreen()));
+        MaterialPageRoute(builder: (context) => EventNotificationScreen(
+          reminder: new Reminder(),
+        )));
+    if (null != result) {
+      this.reminders.add(result);
+    }
   }
 }
