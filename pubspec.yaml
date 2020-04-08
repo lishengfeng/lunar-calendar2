@@ -22,7 +22,7 @@ dependencies:
   flutter_swiper : any
   shared_preferences: any
   firebase_auth: ^0.14.0+4
-  google_sign_in: ^4.0.6
+  google_sign_in: ^4.4.1
   cloud_firestore: ^0.12.9+1
   googleapis: ^0.54.0
   uuid: ^2.0.4
