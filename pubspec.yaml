@@ -29,6 +29,7 @@ dependencies:
   intl: ^0.16.1
   provider: ^4.0.4
   sorted_list: ^0.1.0
+  progress_dialog: ^1.2.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
