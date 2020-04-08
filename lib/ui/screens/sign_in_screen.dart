@@ -100,14 +100,10 @@ class _SignInPageState extends State<SignInScreen> {
     return OutlineButton(
       splashColor: Colors.grey,
       onPressed: () {
-        signInWithGoogle().whenComplete(() {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) {
-                return new MainScreen();
-              },
-            ),
-          );
+        signInWithGoogle().then((bool success) {
+          if (success) {
+            Navigator.of(context).pushNamed("/root");
+          }
         });
       },
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),

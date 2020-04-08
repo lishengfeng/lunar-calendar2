@@ -3,17 +3,18 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
-final GoogleSignIn googleSignIn = GoogleSignIn(
-  scopes: [
-    CalendarApi.CalendarScope,
-    CalendarApi.CalendarEventsScope,
-  ]
-);
+final GoogleSignIn googleSignIn = GoogleSignIn(scopes: <String>[
+  CalendarApi.CalendarScope,
+  CalendarApi.CalendarEventsScope,
+]);
 
-Future<String> signInWithGoogle() async {
+Future<bool> signInWithGoogle() async {
   final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+  if (googleSignInAccount == null) {
+    return false;
+  }
   final GoogleSignInAuthentication googleSignInAuthentication =
-  await googleSignInAccount.authentication;
+      await googleSignInAccount.authentication;
 
   final AuthCredential credential = GoogleAuthProvider.getCredential(
     accessToken: googleSignInAuthentication.accessToken,
@@ -28,10 +29,10 @@ Future<String> signInWithGoogle() async {
   final FirebaseUser currentUser = await _auth.currentUser();
   assert(user.uid == currentUser.uid);
 
-  return 'signInWithGoogle succeeded: $user';
+  return true;
 }
 
-void signOutGoogle() async{
+void signOutGoogle() async {
   await googleSignIn.signOut();
 
   print("User Sign Out");
