@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:lunarcalendar/models/lunar_event.dart';
 import 'package:lunarcalendar/ui/screens/lunar_event_screen.dart';
+import 'package:sorted_list/sorted_list.dart';
 
 // This app is a stateful, it tracks the user's current choice.
 class MainScreen extends StatefulWidget {
@@ -13,13 +15,59 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   Choice _selectedChoice = choices[0]; // The app's "state".
-  List<String> items = [];
+  SortedList<LunarEvent> items;
 
   void _select(Choice choice) {
     setState(() {
       // Causes the app to rebuild with the new _selectedChoice.
       _selectedChoice = choice;
     });
+  }
+
+  @override
+  void initState() {
+    items = new SortedList((a, b) => a.compareTo(b));
+    LunarEvent lunarEvent1 = new LunarEvent(
+        summary: '山生日',
+        start: '04-17',
+        end: '04-17',
+        location: '',
+        repeat: 70,
+        repeatType: RepeatType.ANNUALLY);
+    Reminder reminder1 = new Reminder(
+        method: ReminderMethod.EMAIL,
+        count: 1,
+        type: ReminderType.DAY,
+        time: "21:00");
+    Reminder reminder2 = new Reminder(
+        method: ReminderMethod.POP_UP,
+        count: 1,
+        type: ReminderType.DAY,
+        time: "21:00");
+    lunarEvent1.addReminder(reminder1);
+    lunarEvent1.addReminder(reminder2);
+    LunarEvent lunarEvent2 = new LunarEvent(
+        summary: '琦生日',
+        start: '01-25',
+        end: '01-25',
+        location: '',
+        repeat: 70,
+        repeatType: RepeatType.ANNUALLY);
+    Reminder reminder3 = new Reminder(
+        method: ReminderMethod.EMAIL,
+        count: 1,
+        type: ReminderType.DAY,
+        time: "21:00");
+    Reminder reminder4 = new Reminder(
+        method: ReminderMethod.POP_UP,
+        count: 1,
+        type: ReminderType.DAY,
+        time: "21:00");
+    lunarEvent2.addReminder(reminder3);
+    lunarEvent2.addReminder(reminder4);
+    items.add(lunarEvent1);
+    items.add(lunarEvent2);
+    super.initState();
   }
 
   @override
