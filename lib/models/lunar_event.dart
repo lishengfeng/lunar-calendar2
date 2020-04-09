@@ -21,14 +21,15 @@ class Reminder {
   Reminder.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         method = ReminderMethod.values.firstWhere((e) =>
-            e.toString() ==
+        e.toString() ==
             'ReminderMethod.' + (json['method'] as String).toUpperCase()),
         count = json['count'],
         type = ReminderType.values
             .firstWhere((e) => e.toString() == 'ReminderType.' + json['type']),
         time = json['time'];
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         'id': id,
         'method': describeEnum(method).toLowerCase(),
         'count': count,
@@ -64,13 +65,12 @@ class LunarEvent extends Comparable<LunarEvent> {
   RepeatType repeatType;
   List<Reminder> reminders = [];
 
-  LunarEvent(
-      {this.summary,
-      this.start,
-      this.end,
-      this.location,
-      this.repeat,
-      this.repeatType = RepeatType.ANNUALLY});
+  LunarEvent({this.summary,
+    this.start,
+    this.end,
+    this.location,
+    this.repeat,
+    this.repeatType = RepeatType.ANNUALLY});
 
   LunarEvent.fromJson(Map<String, dynamic> jsonData)
       : id = jsonData['id'],
@@ -79,10 +79,13 @@ class LunarEvent extends Comparable<LunarEvent> {
         end = jsonData['end'],
         location = jsonData['location'],
         repeat = jsonData['repeat'],
-        repeatType = jsonData['repeatType'],
-        reminders = json.decode(jsonData['reminders']);
+        repeatType = RepeatType.values.firstWhere(
+                (e) => e.toString() == 'RepeatType.' + jsonData['repeatType']),
+        reminders = json.decode(jsonData['reminders']).map<Reminder>((v) =>
+            Reminder.fromJson(v)).toList();
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         'id': id,
         'summary': summary,
         'start': start,
@@ -108,7 +111,7 @@ class LunarEvent extends Comparable<LunarEvent> {
   int compareTo(LunarEvent other) {
     final formatter = DateFormat('MM-dd');
     var result =
-        formatter.parse(this.start).compareTo(formatter.parse(other.start));
+    formatter.parse(this.start).compareTo(formatter.parse(other.start));
     if (result == 0) {
       return this.summary.compareTo(other.summary);
     }

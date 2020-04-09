@@ -262,8 +262,8 @@ class _MainScreenState extends State<MainScreen> {
             verifiedVersion = true;
           }
           String id = jsonData['id'];
-          if (oldVersion) {
-            if (!idSet.contains(id)) {
+          if (!idSet.contains(id)) {
+            if (oldVersion) {
               LunarEvent lunarEvent = new LunarEvent(
                 summary: jsonData['summary'],
                 location: jsonData['location'],
@@ -295,9 +295,11 @@ class _MainScreenState extends State<MainScreen> {
               lunarEvent.reminders = reminderList;
               idSet.add(id);
               lunarEvents.add(lunarEvent);
+            } else {
+              jsonData.remove('version');
+              LunarEvent lunarEvent = LunarEvent.fromJson(jsonData);
+              lunarEvents.add(lunarEvent);
             }
-          } else {
-            // TODO parse new version Json. Remember to put version there.
           }
         } catch (error) {
           log('Not valid json. event.description: $description');
