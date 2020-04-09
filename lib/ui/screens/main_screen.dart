@@ -5,6 +5,7 @@
 import 'dart:collection';
 import 'dart:convert' show json;
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import 'package:lunarcalendar/models/lunar_event.dart';
 import 'package:lunarcalendar/ui/screens/lunar_event_screen.dart';
 import 'package:lunarcalendar/utils/auth.dart';
 import 'package:lunarcalendar/utils/lunar_solar_converter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:sorted_list/sorted_list.dart';
 import 'package:uuid/uuid.dart';
@@ -78,6 +80,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     lunarEvents = new SortedList((a, b) => a.compareTo(b));
+    tryLoadLunarEventsFromFile();
     super.initState();
   }
 
@@ -270,35 +273,7 @@ class _MainScreenState extends State<MainScreen> {
           String id = jsonData['id'];
           if (!idSet.contains(id)) {
             if (oldVersion) {
-              LunarEvent lunarEvent = new LunarEvent(
-                summary: jsonData['summary'],
-                location: jsonData['location'],
-                repeat: jsonData['repeat'],
-                start: jsonData['start'],
-                end: jsonData['end'],
-                repeatType: RepeatType.values.firstWhere((e) =>
-                    e.toString() == 'RepeatType.' + jsonData['repeatType']),
-              );
-              lunarEvent.id = id;
-              List<Reminder> reminderList = [];
-              var reminders = jsonData['reminderMap'];
-              if (reminders != null && reminders.length > 0) {
-                (reminders as Map<String, dynamic>).forEach((key, value) {
-                  Reminder reminder = new Reminder(
-                      method: ReminderMethod.values.firstWhere((e) =>
-                          e.toString() ==
-                          'ReminderMethod.' +
-                              (value['method'] as String).toUpperCase()),
-                      count: value['count'],
-                      type: value['type'] == 'days'
-                          ? ReminderType.DAY
-                          : ReminderType.WEEK,
-                      time: value['time']);
-                  reminder.id = Uuid().v4();
-                  reminderList.add(reminder);
-                });
-              }
-              lunarEvent.reminders = reminderList;
+              LunarEvent lunarEvent = getLunarEventFromOldJson(jsonData);
               idSet.add(id);
               lunarEvents.add(lunarEvent);
             } else {
@@ -315,6 +290,37 @@ class _MainScreenState extends State<MainScreen> {
     percentageDialog.hide();
     setState(() {});
     return;
+  }
+
+  LunarEvent getLunarEventFromOldJson(Map<String, dynamic> jsonData) {
+    LunarEvent lunarEvent = new LunarEvent(
+      summary: jsonData['summary'],
+      location: jsonData['location'],
+      repeat: jsonData['repeat'],
+      start: jsonData['start'],
+      end: jsonData['end'],
+      repeatType: RepeatType.values.firstWhere(
+          (e) => e.toString() == 'RepeatType.' + jsonData['repeatType']),
+    );
+    lunarEvent.id = jsonData['id'];
+    List<Reminder> reminderList = [];
+    var reminders = jsonData['reminderMap'];
+    if (reminders != null && reminders.length > 0) {
+      (reminders as Map<String, dynamic>).forEach((key, value) {
+        Reminder reminder = new Reminder(
+            method: ReminderMethod.values.firstWhere((e) =>
+                e.toString() ==
+                'ReminderMethod.' + (value['method'] as String).toUpperCase()),
+            count: value['count'],
+            type:
+                value['type'] == 'days' ? ReminderType.DAY : ReminderType.WEEK,
+            time: value['time']);
+        reminder.id = Uuid().v4();
+        reminderList.add(reminder);
+      });
+    }
+    lunarEvent.reminders = reminderList;
+    return lunarEvent;
   }
 
   Future<void> exportEvents() async {
@@ -513,6 +519,39 @@ class _MainScreenState extends State<MainScreen> {
       body['reminders'] = reminders;
     }
     return body;
+  }
+
+  void tryLoadLunarEventsFromFile() async {
+    final directory = await getApplicationDocumentsDirectory();
+    var file = File('${directory.path}/lunarEvents');
+    var isFilesExists = await file.exists();
+    Map<String, dynamic> jsonData;
+    if (isFilesExists) {
+      String contents = await file.readAsString();
+      if (contents?.isNotEmpty ?? false) {
+        List<dynamic> list = json.decode(contents);
+        for(var jsonData in list) {
+          LunarEvent lunarEvent = LunarEvent.fromJson(jsonData);
+          lunarEvents.add(lunarEvent);
+        }
+        setState(() {});
+      }
+    } else {
+      //Try old path written by kotlin
+      var path = directory.path;
+      path = path.substring(0, path.lastIndexOf('/'));
+      file = File('$path/files/lunarEvents');
+      if (file.existsSync()) {
+        String contents = await file.readAsString();
+        if (contents?.isNotEmpty ?? false) {
+          List<dynamic> list = json.decode(contents);
+          for(var jsonData in list) {
+            lunarEvents.add(getLunarEventFromOldJson(jsonData));
+          }
+          setState(() {});
+        }
+      }
+    }
   }
 }
 
