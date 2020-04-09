@@ -236,13 +236,8 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                               minWidth: 1,
                             ),
                             onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          EventNotificationScreen(
-                                            reminder: reminders[index],
-                                          )));
+                              _navigateToModifyNotification(
+                                  context, reminders[index]);
                             },
                           ),
                         );
@@ -353,5 +348,17 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
     if (null != result) {
       this.reminders.add(result);
     }
+  }
+
+  void _navigateToModifyNotification(
+      BuildContext context, Reminder reminder) async {
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EventNotificationScreen(
+                  reminder: reminder,
+                )));
+    // For some reason, Navigator push does not trigger setState
+    setState(() {});
   }
 }

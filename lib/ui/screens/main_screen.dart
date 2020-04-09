@@ -155,12 +155,7 @@ class _MainScreenState extends State<MainScreen> {
                   minWidth: 1,
                 ),
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => LunarEventScreen(
-                                lunarEvent: lunarEvents[index],
-                              )));
+                  _navigateToModifyLunarEvent(context, lunarEvents[index]);
                 },
               ),
             );
@@ -180,6 +175,17 @@ class _MainScreenState extends State<MainScreen> {
       lunarEvents.add(result);
       setState(() {});
     }
+  }
+
+  void _navigateToModifyLunarEvent(
+      BuildContext context, LunarEvent lunarEvent) async {
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => LunarEventScreen(
+                  lunarEvent: lunarEvent,
+                )));
+    setState(() {});
   }
 
   Future<Map<String, String>> loadCalendars() async {
@@ -333,8 +339,7 @@ class _MainScreenState extends State<MainScreen> {
     authHeaders['Content-Type'] = 'application/json';
 
     http.Response response = await http.post(CALENDAR_API_URL + '/calendars',
-        headers: authHeaders,
-        body: body);
+        headers: authHeaders, body: body);
     if (response.statusCode != 200) {
       Fluttertoast.showToast(
         msg: "Google Calenndar API gave a ${response.statusCode} response.",
@@ -412,9 +417,7 @@ class _MainScreenState extends State<MainScreen> {
         }
       }
     }
-    percentageDialog.update(
-      progress: 0
-    );
+    percentageDialog.update(progress: 0);
     percentageDialog.hide();
   }
 
