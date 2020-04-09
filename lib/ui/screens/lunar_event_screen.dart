@@ -57,7 +57,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                   TextFormField(
                     decoration: const InputDecoration(
                       labelText: 'Event start date',
-                      hintText: 'e.g. 01/31/1990',
+                      hintText: 'e.g. 01-31',
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
@@ -79,7 +79,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                   TextFormField(
                     decoration: const InputDecoration(
                       labelText: 'Event end date',
-                      hintText: 'e.g. 01/31/1990',
+                      hintText: 'e.g. 01-31',
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
@@ -283,7 +283,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
   }
 
   String getNotificationTitle(Reminder reminder) {
-    return reminder.method == ReminderMethod.POP_UP ? 'Notification' : 'Email';
+    return reminder.method == ReminderMethod.POPUP ? 'Notification' : 'Email';
   }
 
   String getNotificationSubtitle(Reminder reminder) {
@@ -298,7 +298,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
     if (str == null || str.trim().isEmpty) return false;
     str = str.trim();
     try {
-      final date = DateFormat('MM/dd/yyyy').parse(str);
+      final date = DateFormat('MM-dd').parse(str);
       final originalFormatString = toOriginalFormatDate(date);
       return str == originalFormatString;
     } catch (error) {
@@ -329,10 +329,9 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
   }
 
   String toOriginalFormatDate(DateTime dateTime) {
-    final y = dateTime.year.toString().padLeft(4, '0').substring(0, 4);
     final m = dateTime.month.toString().padLeft(2, '0');
     final d = dateTime.day.toString().padLeft(2, '0');
-    return "$m/$d/$y";
+    return "$m-$d";
   }
 
   void _handleRepeatTypeChange(RepeatType value) {

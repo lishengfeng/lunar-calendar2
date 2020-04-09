@@ -48,7 +48,7 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Radio(
-                        value: ReminderMethod.POP_UP,
+                        value: ReminderMethod.POPUP,
                         groupValue: _reminderMethod,
                         onChanged: _handleReminderMethodChange,
                       ),

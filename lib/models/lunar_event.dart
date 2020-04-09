@@ -2,14 +2,14 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 class Reminder {
-  Uuid id = Uuid();
+  String id = Uuid().v4();
   ReminderMethod method;
   int count;
   ReminderType type;
   String time;
 
   Reminder({
-    this.method = ReminderMethod.POP_UP,
+    this.method = ReminderMethod.POPUP,
     this.count,
     this.type,
     this.time,
@@ -44,12 +44,12 @@ class Reminder {
 
 enum RepeatType { NO_REPEAT, MONTHLY, ANNUALLY }
 
-enum ReminderMethod { POP_UP, EMAIL }
+enum ReminderMethod { POPUP, EMAIL }
 
 enum ReminderType { DAY, WEEK }
 
 class LunarEvent extends Comparable<LunarEvent> {
-  Uuid id = Uuid();
+  String id = Uuid().v4();
   String summary;
   String start;
   String end;
@@ -100,7 +100,7 @@ class LunarEvent extends Comparable<LunarEvent> {
 
   @override
   int compareTo(LunarEvent other) {
-    final formatter = DateFormat('MM/dd/yyyy');
+    final formatter = DateFormat('MM-dd');
     var result =
         formatter.parse(this.start).compareTo(formatter.parse(other.start));
     if (result == 0) {
