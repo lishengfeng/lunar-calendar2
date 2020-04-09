@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:convert' show json;
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 import 'package:lunarcalendar/models/lunar_event.dart';
 import 'package:lunarcalendar/ui/screens/lunar_event_screen.dart';
+import 'package:lunarcalendar/utils/auth.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:sorted_list/sorted_list.dart';
 
 // This app is a stateful, it tracks the user's current choice.
@@ -14,14 +20,29 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  Choice _selectedChoice = choices[0]; // The app's "state".
   SortedList<LunarEvent> lunarEvents;
+  ProgressDialog pr;
 
   void _select(Choice choice) {
-    setState(() {
-      // Causes the app to rebuild with the new _selectedChoice.
-      _selectedChoice = choice;
-    });
+    switch (choice.title) {
+      case 'Import':
+        loadCalendars().then((Map<String, String > map) {
+          map.forEach((key, value) {
+            print('key: $key, value: $value');
+          });
+        }).catchError((e) {
+          Fluttertoast.showToast(
+            msg: "Got error: ${e.error}.",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+          );
+        });
+        break;
+      case 'Export':
+        break;
+      default:
+        break;
+    }
   }
 
   @override
@@ -32,6 +53,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    pr = ProgressDialog(context);
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -105,8 +127,7 @@ class _MainScreenState extends State<MainScreen> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                              LunarEventScreen(
+                          builder: (context) => LunarEventScreen(
                                 lunarEvent: lunarEvents[index],
                               )));
                 },
@@ -120,8 +141,7 @@ class _MainScreenState extends State<MainScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) =>
-              LunarEventScreen(
+          builder: (context) => LunarEventScreen(
                 lunarEvent: new LunarEvent(),
               )),
     );
@@ -129,6 +149,32 @@ class _MainScreenState extends State<MainScreen> {
       lunarEvents.add(result);
       setState(() {});
     }
+  }
+
+  Future<Map<String, String>> loadCalendars() async {
+    pr.show();
+    if (googleSignIn.currentUser == null) {
+      await googleSignIn.signInSilently();
+    }
+    final http.Response response = await http.get(
+        'https://www.googleapis.com/calendar/v3/users/me/calendarList',
+        headers: await googleSignIn.currentUser.authHeaders);
+    if (response.statusCode != 200) {
+      Fluttertoast.showToast(
+        msg: "Google Calenndar API gave a ${response.statusCode} response.",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+      );
+      pr.hide();
+      return null;
+    }
+    final Map<String, dynamic> data = json.decode(response.body);
+    final Map<String, String> calendarSummaryIdMap = Map.fromIterable(
+        data['items'],
+        key: (v) => v['summary'],
+        value: (v) => v['id']);
+    pr.hide();
+    return calendarSummaryIdMap;
   }
 }
 
