@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -17,16 +20,19 @@ class Reminder {
 
   Reminder.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        method = json['method'],
+        method = ReminderMethod.values.firstWhere((e) =>
+            e.toString() ==
+            'ReminderMethod.' + (json['method'] as String).toUpperCase()),
         count = json['count'],
-        type = json['type'],
+        type = ReminderType.values
+            .firstWhere((e) => e.toString() == 'ReminderType.' + json['type']),
         time = json['time'];
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'method': method,
+        'method': describeEnum(method).toLowerCase(),
         'count': count,
-        'type': type,
+        'type': describeEnum(type),
         'time': time,
       };
 
@@ -66,15 +72,15 @@ class LunarEvent extends Comparable<LunarEvent> {
       this.repeat,
       this.repeatType = RepeatType.ANNUALLY});
 
-  LunarEvent.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        summary = json['summary'],
-        start = json['start'],
-        end = json['end'],
-        location = json['location'],
-        repeat = json['repeat'],
-        repeatType = json['repeatType'],
-        reminders = json['reminders'];
+  LunarEvent.fromJson(Map<String, dynamic> jsonData)
+      : id = jsonData['id'],
+        summary = jsonData['summary'],
+        start = jsonData['start'],
+        end = jsonData['end'],
+        location = jsonData['location'],
+        repeat = jsonData['repeat'],
+        repeatType = jsonData['repeatType'],
+        reminders = json.decode(jsonData['reminders']);
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -83,8 +89,8 @@ class LunarEvent extends Comparable<LunarEvent> {
         'end': end,
         'location': location,
         'repeat': repeat,
-        'repeatType': repeatType,
-        'reminders': reminders,
+        'repeatType': describeEnum(repeatType),
+        'reminders': json.encode(reminders),
       };
 
   @override

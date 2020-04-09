@@ -6,6 +6,7 @@ import 'dart:collection';
 import 'dart:convert' show json;
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -13,6 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:lunarcalendar/models/lunar_event.dart';
 import 'package:lunarcalendar/ui/screens/lunar_event_screen.dart';
 import 'package:lunarcalendar/utils/auth.dart';
+import 'package:lunarcalendar/utils/lunar_solar_converter.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:sorted_list/sorted_list.dart';
 import 'package:uuid/uuid.dart';
@@ -25,7 +27,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   SortedList<LunarEvent> lunarEvents;
-  ProgressDialog pr;
+  ProgressDialog percentageDialog;
   static const String CALENDAR_API_URL =
       'https://www.googleapis.com/calendar/v3';
 
@@ -47,10 +49,10 @@ class _MainScreenState extends State<MainScreen> {
                     title: Text('Choose an existing lunar calendar'),
                     children: map.entries.map<SimpleDialogOption>((entry) {
                       return SimpleDialogOption(
-                        child: Text(entry.key),
+                        child: Text(entry.value),
                         onPressed: () {
                           Navigator.of(context, rootNavigator: true).pop();
-                          loadLunarEvents(entry.value);
+                          loadLunarEvents(entry.key);
                         },
                       );
                     }).toList(),
@@ -66,6 +68,7 @@ class _MainScreenState extends State<MainScreen> {
         });
         break;
       case 'Export':
+        exportEvents();
         break;
       default:
         break;
@@ -80,7 +83,8 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    pr = ProgressDialog(context);
+    percentageDialog = ProgressDialog(context,
+        type: ProgressDialogType.Download, isDismissible: false);
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -179,10 +183,10 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<Map<String, String>> loadCalendars() async {
-    pr.update(
+    percentageDialog.update(
       message: "Loading calendars",
     );
-    pr.show();
+    percentageDialog.show();
     if (googleSignIn.currentUser == null) {
       await googleSignIn.signInSilently();
     }
@@ -195,23 +199,23 @@ class _MainScreenState extends State<MainScreen> {
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
       );
-      pr.hide();
+      percentageDialog.hide();
       return null;
     }
     final Map<String, dynamic> data = json.decode(response.body);
     final Map<String, String> calendarSummaryIdMap = Map.fromIterable(
         data['items'],
-        key: (v) => v['summary'],
-        value: (v) => v['id']);
-    pr.hide();
+        key: (v) => v['id'],
+        value: (v) => v['summary']);
+    percentageDialog.hide();
     return calendarSummaryIdMap;
   }
 
   Future<void> loadLunarEvents(String calendarId) async {
-    pr.update(
+    percentageDialog.update(
       message: "Loading lunar events",
     );
-    pr.show();
+    percentageDialog.show();
     if (googleSignIn.currentUser == null) {
       await googleSignIn.signInSilently();
     }
@@ -222,19 +226,20 @@ class _MainScreenState extends State<MainScreen> {
     if (lunarEvents.length > 0) {
       idSet.addAll(lunarEvents.map<String>((lunarEvent) => lunarEvent.id));
     }
+    var authHeaders = await googleSignIn.currentUser.authHeaders;
     do {
       final http.Response response = await http.get(
           CALENDAR_API_URL +
               '/calendars/$calendarId/events?orderBy=updated' +
               (pageToken.isEmpty ? "" : "&pageToken=$pageToken"),
-          headers: await googleSignIn.currentUser.authHeaders);
+          headers: authHeaders);
       if (response.statusCode != 200) {
         Fluttertoast.showToast(
           msg: "Google Calenndar API gave a ${response.statusCode} response.",
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
         );
-        pr.hide();
+        percentageDialog.hide();
         return;
       }
       final Map<String, dynamic> data = json.decode(response.body);
@@ -299,9 +304,210 @@ class _MainScreenState extends State<MainScreen> {
         }
       });
     } while (pageToken?.isNotEmpty ?? false);
-    pr.hide();
+    percentageDialog.hide();
     setState(() {});
     return;
+  }
+
+  Future<void> exportEvents() async {
+    if (lunarEvents.length == 0) {
+      Fluttertoast.showToast(
+        msg: "There are no lunar events to be exported.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
+      return;
+    }
+    percentageDialog.show();
+    percentageDialog.update(
+        message: 'Syncing', progress: 0, maxProgress: 100.0);
+    if (googleSignIn.currentUser == null) {
+      await googleSignIn.signInSilently();
+    }
+
+    Map bodyData = {'summary': 'Lunar Events'};
+    var body = json.encode(bodyData);
+    var authHeaders = await googleSignIn.currentUser.authHeaders;
+    authHeaders['Content-Type'] = 'application/json';
+
+    http.Response response = await http.post(CALENDAR_API_URL + '/calendars',
+        headers: authHeaders,
+        body: body);
+    if (response.statusCode != 200) {
+      Fluttertoast.showToast(
+        msg: "Google Calenndar API gave a ${response.statusCode} response.",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+      );
+      percentageDialog.hide();
+      return;
+    }
+
+    final Map<String, dynamic> data = json.decode(response.body);
+    String calendarId = data['id'];
+
+    var totalEvents = 0;
+    var now = DateTime.now();
+    var dateFormatter = DateFormat('MM-dd');
+    var timeFormatter = DateFormat('HH:mm');
+    lunarEvents.forEach((e) {
+      if (e.summary.isEmpty) return;
+      totalEvents++;
+      if (e.repeatType != RepeatType.NO_REPEAT) {
+        totalEvents += e.repeat;
+      }
+    });
+
+    var eventDone = 0;
+
+    for (var e in lunarEvents) {
+      if (e.summary.isEmpty) {
+        continue;
+      }
+      var startDate = dateFormatter.parse(e.start);
+      startDate = DateTime(now.year, startDate.month, startDate.day);
+      var endDate = dateFormatter.parse(e.end);
+      endDate = DateTime(now.year, endDate.month, endDate.day);
+      var lunarStart = getLatestLunarAfterNow(now, startDate);
+      var solarStart = getSolar(lunarStart, RepeatType.NO_REPEAT, 0);
+      var lunarEnd = getLatestLunarAfterNow(now, endDate);
+      var solarEnd = getSolar(lunarEnd, RepeatType.NO_REPEAT, 0);
+      if (solarStart == null || solarEnd == null) {
+        eventDone++;
+        if (e.repeatType != RepeatType.NO_REPEAT) {
+          eventDone += e.repeat;
+        }
+        publishDone(eventDone, totalEvents);
+        continue;
+      }
+      var event = getEvent(e, solarStart, solarEnd, timeFormatter);
+      var descriptionMap = e.toJson();
+      descriptionMap['version'] = 2;
+      event['description'] = json.encode(descriptionMap);
+      body = json.encode(event);
+      response = await http.post(
+          CALENDAR_API_URL + '/calendars/' + calendarId + '/events',
+          headers: authHeaders,
+          body: body);
+      eventDone++;
+      publishDone(eventDone, totalEvents);
+      if (e.repeatType != RepeatType.NO_REPEAT) {
+        for (int x = 0; x < e.repeat; x++) {
+          eventDone++;
+          solarStart = getSolar(lunarStart, e.repeatType, x + 1);
+          solarEnd = getSolar(lunarEnd, e.repeatType, x + 1);
+          if (solarStart == null || solarEnd == null) {
+            publishDone(eventDone, totalEvents);
+            break;
+          }
+          event = getEvent(e, solarStart, solarEnd, timeFormatter);
+          body = json.encode(event);
+          response = await http.post(
+              CALENDAR_API_URL + '/calendars/' + calendarId + '/events',
+              headers: authHeaders,
+              body: body);
+          publishDone(eventDone, totalEvents);
+        }
+      }
+    }
+    percentageDialog.update(
+      progress: 0
+    );
+    percentageDialog.hide();
+  }
+
+  Lunar getLatestLunarAfterNow(DateTime now, DateTime lunarDate) {
+    var lunar = Lunar();
+    lunar.isleap = false;
+    lunar.lunarYear = now.year;
+    lunar.lunarMonth = lunarDate.month;
+    lunar.lunarDay = lunarDate.day;
+    var solarStart = getSolar(lunar, RepeatType.NO_REPEAT, 0);
+    if (solarStart == null) return null;
+    var solarDate = DateTime(
+        solarStart.solarYear, solarStart.solarMonth, solarStart.solarDay);
+    if (solarDate.compareTo(now) < 0) {
+      lunar.lunarYear++;
+    }
+    return lunar;
+  }
+
+  Solar getSolar(Lunar lunar, RepeatType repeatType, int offset) {
+    if (lunar == null) return null;
+    var lunarYear = lunar.lunarYear;
+    var lunarMonth = lunar.lunarMonth;
+    final newLunar = Lunar();
+
+    if (repeatType == RepeatType.ANNUALLY) {
+      lunarYear += offset;
+    } else if (repeatType == RepeatType.MONTHLY) {
+      lunarYear += (lunarMonth + offset - 1) ~/ 12;
+      lunarMonth = (lunarMonth + offset - 1) % 12 + 1;
+    }
+    newLunar.isleap = lunar.isleap;
+    newLunar.lunarYear = lunarYear;
+    newLunar.lunarMonth = lunarMonth;
+    newLunar.lunarDay = lunar.lunarDay;
+
+    final solar = LunarSolarConverter.lunarToSolar(newLunar);
+    if (solar.solarYear == -1) {
+      return null;
+    }
+    return solar;
+  }
+
+  void publishDone(int eventDone, int totalEvents) {
+    percentageDialog.update(
+        progress: (eventDone * 100 / totalEvents).roundToDouble());
+  }
+
+  getEvent(LunarEvent lunarEvent, Solar solarStart, Solar solarEnd,
+      DateFormat timeFormatter) {
+    var reminders;
+    if (lunarEvent.reminders.length > 0) {
+      var overrides = [];
+      for (int i = 0; i < lunarEvent.reminders.length && i <= 5; i++) {
+        Reminder reminder = lunarEvent.reminders[i];
+        int reminderCount = reminder.count;
+        if (reminderCount == 0) continue;
+        if (ReminderType.WEEK == reminder.type) {
+          reminderCount *= 7;
+        }
+        var dayMinutes = (reminderCount - 1) * 24 * 60;
+        var reminderTime = timeFormatter.parse(reminder.time);
+        var startTime = timeFormatter.parse('24:00');
+        var diffTime = startTime.difference(reminderTime).inMinutes.abs();
+        var totalMinutes = dayMinutes + diffTime;
+        // 4 weeks in minutes. 4 week is the maximum number allowed
+        if (totalMinutes > 40320) continue;
+
+        var override = {
+          'method': describeEnum(reminder.method).toLowerCase(),
+          'minutes': totalMinutes,
+        };
+        overrides.add(override);
+      }
+      reminders = {'useDefault': false, 'overrides': overrides};
+    }
+
+    var body = {
+      'start': {
+        'date':
+            '${solarStart.solarYear.toString()}-${solarStart.solarMonth.toString().padLeft(2, '0')}-${solarStart.solarDay.toString().padLeft(2, '0')}',
+      },
+      'end': {
+        'date':
+            '${solarEnd.solarYear.toString()}-${solarEnd.solarMonth.toString().padLeft(2, '0')}-${solarEnd.solarDay.toString().padLeft(2, '0')}',
+      },
+      'summary': lunarEvent.summary,
+    };
+    if (lunarEvent.location?.isNotEmpty ?? false) {
+      body['location'] = lunarEvent.location;
+    }
+    if (reminders != null) {
+      body['reminders'] = reminders;
+    }
+    return body;
   }
 }
 
