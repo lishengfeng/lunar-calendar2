@@ -26,10 +26,30 @@ class _MainScreenState extends State<MainScreen> {
   void _select(Choice choice) {
     switch (choice.title) {
       case 'Import':
-        loadCalendars().then((Map<String, String > map) {
-          map.forEach((key, value) {
-            print('key: $key, value: $value');
-          });
+        loadCalendars().then((Map<String, String> map) {
+          if (map.length == 0) {
+            Fluttertoast.showToast(
+              msg: "There is no calendar found",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+            );
+          } else {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return SimpleDialog(
+                    title: Text('Choose an existing lunar calendar'),
+                    children: map.entries.map<SimpleDialogOption>((entry) {
+                      return SimpleDialogOption(
+                        child: Text(entry.key),
+                        onPressed: () {
+                          Navigator.of(context, rootNavigator: true).pop();
+                        },
+                      );
+                    }).toList(),
+                  );
+                });
+          }
         }).catchError((e) {
           Fluttertoast.showToast(
             msg: "Got error: ${e.error}.",
