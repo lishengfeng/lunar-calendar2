@@ -77,7 +77,10 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         });
         break;
       case 'export':
-        exportEvents();
+        exportEvents().whenComplete(() {
+          percentageDialog.update(progress: 0);
+          percentageDialog.hide();
+        });
         break;
       default:
         break;
@@ -123,7 +126,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     percentageDialog = ProgressDialog(context,
-        type: ProgressDialogType.Download, isDismissible: false);
+        type: ProgressDialogType.Download);
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -477,8 +480,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         }
       }
     }
-    percentageDialog.update(progress: 0);
-    percentageDialog.hide();
   }
 
   Lunar getLatestLunarAfterNow(DateTime now, DateTime lunarDate) {
