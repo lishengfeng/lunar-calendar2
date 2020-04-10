@@ -27,11 +27,12 @@ class MainScreen extends StatefulWidget {
   _MainScreenState createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   SortedList<LunarEvent> lunarEvents;
   ProgressDialog percentageDialog;
   static const String CALENDAR_API_URL =
       'https://www.googleapis.com/calendar/v3';
+  var filePath;
 
   void _select(Choice choice) {
     switch (choice.title) {
@@ -79,9 +80,33 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
     lunarEvents = new SortedList((a, b) => a.compareTo(b));
     tryLoadLunarEventsFromFile();
-    super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.paused) {
+      saveToFile();
+    }
+  }
+
+  void saveToFile() {
+    var file = File('$filePath/lunarEvents');
+    if (!file.existsSync()) {
+      file.createSync();
+    }
+    String contents = json.encode(lunarEvents);
+    file.writeAsStringSync(contents);
   }
 
   @override
@@ -523,14 +548,14 @@ class _MainScreenState extends State<MainScreen> {
 
   void tryLoadLunarEventsFromFile() async {
     final directory = await getApplicationDocumentsDirectory();
-    var file = File('${directory.path}/lunarEvents');
+    filePath = directory.path;
+    var file = File('$filePath/lunarEvents');
     var isFilesExists = await file.exists();
-    Map<String, dynamic> jsonData;
     if (isFilesExists) {
       String contents = await file.readAsString();
       if (contents?.isNotEmpty ?? false) {
         List<dynamic> list = json.decode(contents);
-        for(var jsonData in list) {
+        for (var jsonData in list) {
           LunarEvent lunarEvent = LunarEvent.fromJson(jsonData);
           lunarEvents.add(lunarEvent);
         }
@@ -545,7 +570,7 @@ class _MainScreenState extends State<MainScreen> {
         String contents = await file.readAsString();
         if (contents?.isNotEmpty ?? false) {
           List<dynamic> list = json.decode(contents);
-          for(var jsonData in list) {
+          for (var jsonData in list) {
             lunarEvents.add(getLunarEventFromOldJson(jsonData));
           }
           setState(() {});
