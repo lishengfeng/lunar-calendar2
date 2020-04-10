@@ -106,11 +106,12 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                     ),
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Radio(
                         value: RepeatType.ANNUALLY,
                         groupValue: _repeatType,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         onChanged: _handleRepeatTypeChange,
                       ),
                       Text(
@@ -122,6 +123,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                       Radio(
                         value: RepeatType.MONTHLY,
                         groupValue: _repeatType,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         onChanged: _handleRepeatTypeChange,
                       ),
                       Text(
@@ -133,6 +135,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                       Radio(
                         value: RepeatType.NO_REPEAT,
                         groupValue: _repeatType,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         onChanged: _handleRepeatTypeChange,
                       ),
                       Text(
