@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lunarcalendar/ui/screens/main_screen.dart';
 import 'package:lunarcalendar/utils/auth.dart';
+import 'package:lunarcalendar/utils/demo_localizations.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -20,7 +21,7 @@ class _SignInPageState extends State<SignInScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                "Welcome to the App!",
+                DemoLocalizations.of(context).localizedValues['welcome'],
                 style: Theme.of(context).textTheme.headline,
               ),
               Padding(
@@ -77,7 +78,7 @@ class _SignInPageState extends State<SignInScreen> {
                     ),
                     Center(
                       child: Text(
-                        "Since the app aims to work with Google Calendar, please sign in with your Google Account first.",
+                        DemoLocalizations.of(context).localizedValues['sign_in_requirement_desc'],
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.headline,
                       ),
@@ -119,7 +120,7 @@ class _SignInPageState extends State<SignInScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 10),
               child: Text(
-                'Sign in with Google',
+                DemoLocalizations.of(context).localizedValues['sign_in_with_google'],
                 style: TextStyle(
                   fontSize: 20,
                   color: Colors.grey,

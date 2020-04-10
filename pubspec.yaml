@@ -19,6 +19,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   flutter_swiper : any
   shared_preferences: any
   firebase_auth: ^0.14.0+4
@@ -26,7 +28,7 @@ dependencies:
   cloud_firestore: ^0.12.9+1
   googleapis: ^0.54.0
   uuid: ^2.0.4
-  intl: ^0.16.1
+  intl: ^0.16.0
   provider: ^4.0.4
   sorted_list: ^0.1.0
   progress_dialog: ^1.2.1

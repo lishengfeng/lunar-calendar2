@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lunarcalendar/models/lunar_event.dart';
+import 'package:lunarcalendar/utils/demo_localizations.dart';
 
 class EventNotificationScreen extends StatefulWidget {
   final Reminder reminder;
@@ -27,7 +28,8 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Notification'),
+          title: Text(DemoLocalizations.of(context)
+              .localizedValues['notification_title']),
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -38,7 +40,8 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
-                    'Notification type:',
+                    DemoLocalizations.of(context)
+                        .localizedValues['notification_type'],
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16.0,
@@ -53,7 +56,8 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
                         onChanged: _handleReminderMethodChange,
                       ),
                       Text(
-                        'Notification',
+                        DemoLocalizations.of(context)
+                            .localizedValues['calendar_reminder_notification'],
                         style: TextStyle(
                           fontSize: 12.0,
                         ),
@@ -64,7 +68,8 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
                         onChanged: _handleReminderMethodChange,
                       ),
                       Text(
-                        'Email',
+                        DemoLocalizations.of(context)
+                            .localizedValues['calendar_reminder_email'],
                         style: TextStyle(
                           fontSize: 12.0,
                         ),
@@ -75,16 +80,19 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
                     height: 8,
                   ),
                   TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'days/weeks before',
-                      hintText: 'e.g. 1d (1-27) or 1w (1-3)',
+                    decoration: InputDecoration(
+                      labelText: DemoLocalizations.of(context)
+                          .localizedValues['notification_days_weeks_before'],
+                      hintText: DemoLocalizations.of(context).localizedValues[
+                          'notification_days_weeks_before_hint'],
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
                     initialValue: getDaysOrWeeksBeforeText(widget.reminder),
                     validator: (String str) {
                       if (!isValidBefore(str)) {
-                        return "Invalid value";
+                        return DemoLocalizations.of(context)
+                            .localizedValues['invalid_value'];
                       }
                       return null;
                     },
@@ -94,9 +102,11 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
                     height: 8,
                   ),
                   TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Remind time (24-hour format)',
-                      hintText: 'e.g. 09:00',
+                    decoration: InputDecoration(
+                      labelText: DemoLocalizations.of(context)
+                          .localizedValues['notification_remind_time'],
+                      hintText: DemoLocalizations.of(context)
+                          .localizedValues['notification_remind_time_hint'],
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
@@ -104,7 +114,8 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
                     keyboardType: TextInputType.datetime,
                     validator: (String str) {
                       if (!isValidTime(str)) {
-                        return "Invalid time";
+                        return DemoLocalizations.of(context)
+                            .localizedValues['invalid_time'];
                       }
                       return null;
                     },
@@ -125,7 +136,8 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
                             Navigator.pop(context, widget.reminder);
                           }
                         },
-                        child: Text('Save'),
+                        child: Text(DemoLocalizations.of(context)
+                            .localizedValues['save']),
                       ),
                       SizedBox(
                         width: 8,
@@ -134,7 +146,8 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: Text('Cancel'),
+                        child: Text(DemoLocalizations.of(context)
+                            .localizedValues['cancel']),
                       ),
                     ],
                   )

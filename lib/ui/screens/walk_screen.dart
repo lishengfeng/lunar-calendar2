@@ -2,36 +2,11 @@ import 'package:flutter/material.dart';
 import "package:flutter_swiper/flutter_swiper.dart";
 import "package:lunarcalendar/models/walkthrough.dart";
 import 'package:lunarcalendar/ui/widgets/custom_flat_button.dart';
+import 'package:lunarcalendar/utils/demo_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WalkthroughScreen extends StatefulWidget {
   final SharedPreferences prefs;
-  final List<Walkthrough> pages = [
-    Walkthrough(
-      icon: Icons.calendar_today,
-      title: "Welcome to the App!",
-      description:
-          "Just getting start? Let\'s take a look at some great feature of this app.",
-    ),
-    Walkthrough(
-      icon: Icons.add_alarm,
-      title: "Add a lunar event",
-      description:
-          "Adding lunar event is quite simple. Just like adding an event in Google Calendar.",
-    ),
-    Walkthrough(
-      icon: Icons.sync,
-      title: "Sync to Google Calendar",
-      description:
-          "This app will automatically convert your lunar event to solar event and sync them to your Google Calendar.",
-    ),
-    Walkthrough(
-      icon: Icons.sentiment_very_satisfied,
-      title: "Reinstall app?",
-      description:
-          "Just import your lunar events from your Google Calendar back to app. You will retrieve all your inputs w/o retyping again.",
-    ),
-  ];
 
   WalkthroughScreen({this.prefs});
 
@@ -40,6 +15,39 @@ class WalkthroughScreen extends StatefulWidget {
 }
 
 class _WalkthroughScreenState extends State<WalkthroughScreen> {
+  List<Walkthrough> getPages(context) {
+    final List<Walkthrough> pages = [
+      Walkthrough(
+        icon: Icons.calendar_today,
+        title: DemoLocalizations.of(context)
+            .localizedValues['welcome'],
+        description: DemoLocalizations.of(context)
+            .localizedValues['welcome_desc'],
+      ),
+      Walkthrough(
+        icon: Icons.add_alarm,
+        title: DemoLocalizations.of(context).localizedValues['walkthrough_add'],
+        description: DemoLocalizations.of(context)
+            .localizedValues['walkthrough_add_desc'],
+      ),
+      Walkthrough(
+        icon: Icons.sync,
+        title:
+            DemoLocalizations.of(context).localizedValues['walkthrough_sync'],
+        description: DemoLocalizations.of(context)
+            .localizedValues['walkthrough_sync_desc'],
+      ),
+      Walkthrough(
+        icon: Icons.sentiment_very_satisfied,
+        title: DemoLocalizations.of(context)
+            .localizedValues['walkthrough_reinstall'],
+        description: DemoLocalizations.of(context)
+            .localizedValues['walkthrough_reinstall_desc'],
+      ),
+    ];
+    return pages;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,8 +74,9 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
 
   List<Widget> _getPages(BuildContext context) {
     List<Widget> widgets = [];
-    for (int i = 0; i < widget.pages.length; i++) {
-      Walkthrough page = widget.pages[i];
+    List<Walkthrough> pages = getPages(context);
+    for (int i = 0; i < pages.length; i++) {
+      Walkthrough page = pages[i];
       widgets.add(
         new Container(
           color: Color(0xFF0096a6),
@@ -115,7 +124,7 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
               Padding(
                 padding:
                     const EdgeInsets.only(top: 20.0, right: 15.0, left: 15.0),
-                child: i != widget.pages.length - 1
+                child: i != pages.length - 1
                     ? Container()
                     : Container(
                         child: Center(
@@ -127,7 +136,8 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
                                 padding: const EdgeInsets.only(
                                     top: 20.0, right: 15.0, left: 15.0),
                                 child: CustomFlatButton(
-                                  title: "Get Started",
+                                  title: DemoLocalizations.of(context)
+                                      .localizedValues['walkthrough_get_start'],
                                   fontSize: 22,
                                   fontWeight: FontWeight.w700,
                                   textColor: Colors.white,

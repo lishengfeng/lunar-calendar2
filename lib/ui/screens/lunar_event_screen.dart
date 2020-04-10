@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lunarcalendar/models/lunar_event.dart';
 import 'package:lunarcalendar/ui/screens/event_notification_screen.dart';
+import 'package:lunarcalendar/utils/demo_localizations.dart';
 
 class LunarEventScreen extends StatefulWidget {
   final LunarEvent lunarEvent;
@@ -29,7 +30,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Lunar Event'),
+          title: Text(DemoLocalizations.of(context).localizedValues['title']),
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -40,9 +41,11 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Title',
-                      hintText: 'e.g. mom\'s birthday',
+                    decoration: InputDecoration(
+                      labelText: DemoLocalizations.of(context)
+                          .localizedValues['calendar_title'],
+                      hintText: DemoLocalizations.of(context)
+                          .localizedValues['calendar_title_hint'],
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
@@ -55,9 +58,11 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                     height: 8,
                   ),
                   TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Event start date',
-                      hintText: 'e.g. 01-31',
+                    decoration: InputDecoration(
+                      labelText: DemoLocalizations.of(context)
+                          .localizedValues['calendar_event_start'],
+                      hintText: DemoLocalizations.of(context)
+                          .localizedValues['calendar_event_start_hint'],
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
@@ -65,7 +70,8 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                     keyboardType: TextInputType.datetime,
                     validator: (String str) {
                       if (!isValidDate(str)) {
-                        return "Invalid date";
+                        return DemoLocalizations.of(context)
+                            .localizedValues['invalid_date'];
                       }
                       return null;
                     },
@@ -77,9 +83,11 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                     height: 8,
                   ),
                   TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Event end date',
-                      hintText: 'e.g. 01-31',
+                    decoration: InputDecoration(
+                      labelText: DemoLocalizations.of(context)
+                          .localizedValues['calendar_event_end'],
+                      hintText: DemoLocalizations.of(context)
+                          .localizedValues['calendar_event_end_hint'],
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
@@ -87,7 +95,8 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                     keyboardType: TextInputType.datetime,
                     validator: (String str) {
                       if (!isValidDate(str)) {
-                        return "Invalid date";
+                        return DemoLocalizations.of(context)
+                            .localizedValues['invalid_date'];
                       }
                       return null;
                     },
@@ -99,7 +108,8 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                     height: 8,
                   ),
                   Text(
-                    'Repeat type:',
+                    DemoLocalizations.of(context)
+                        .localizedValues['calendar_repeat_type'],
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16.0,
@@ -115,7 +125,8 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                         onChanged: _handleRepeatTypeChange,
                       ),
                       Text(
-                        'Annually',
+                        DemoLocalizations.of(context)
+                            .localizedValues['calendar_repeat_type_annually'],
                         style: TextStyle(
                           fontSize: 12.0,
                         ),
@@ -127,7 +138,8 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                         onChanged: _handleRepeatTypeChange,
                       ),
                       Text(
-                        'Monthly',
+                        DemoLocalizations.of(context)
+                            .localizedValues['calendar_repeat_type_monthly'],
                         style: TextStyle(
                           fontSize: 12.0,
                         ),
@@ -139,7 +151,8 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                         onChanged: _handleRepeatTypeChange,
                       ),
                       Text(
-                        'No repeat',
+                        DemoLocalizations.of(context)
+                            .localizedValues['calendar_repeat_type_no'],
                         style: TextStyle(
                           fontSize: 12.0,
                         ),
@@ -150,9 +163,11 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                     height: 8,
                   ),
                   TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Repeat times (1-99)',
-                      hintText: 'e.g. 80',
+                    decoration: InputDecoration(
+                      labelText: DemoLocalizations.of(context)
+                          .localizedValues['calendar_repeat_time_label'],
+                      hintText: DemoLocalizations.of(context)
+                          .localizedValues['calendar_repeat_time_hint'],
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
@@ -160,7 +175,8 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                     keyboardType: TextInputType.number,
                     validator: (String val) {
                       if (!isInteger(val) || !isInRange(val, 1, 99)) {
-                        return "Invalid number";
+                        return DemoLocalizations.of(context)
+                            .localizedValues['invalid_number'];
                       }
                       return null;
                     },
@@ -172,10 +188,11 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                     height: 8,
                   ),
                   TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Location (Optional)',
-                      hintText:
-                          'e.g. 1600 Amphitheatre Parkway Mountain View, CA',
+                    decoration: InputDecoration(
+                      labelText: DemoLocalizations.of(context)
+                          .localizedValues['calendar_location'],
+                      hintText: DemoLocalizations.of(context)
+                          .localizedValues['calendar_location_hint'],
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.all(8.0), //Control height
                     ),
@@ -191,7 +208,8 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        'Notifications',
+                        DemoLocalizations.of(context)
+                            .localizedValues['calendar_notification'],
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16.0,
@@ -219,12 +237,13 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemCount: reminders.length,
-                      itemBuilder: (context, index) {
+                      itemBuilder: (_context, index) {
                         final item = reminders[index];
                         return Card(
                           child: ListTile(
-                            title: Text(getNotificationTitle(item)),
-                            subtitle: Text(getNotificationSubtitle(item)),
+                            title: Text(getNotificationTitle(context, item)),
+                            subtitle:
+                                Text(getNotificationSubtitle(context, item)),
                             trailing: MaterialButton(
                               onPressed: () {
                                 reminders.removeAt(index);
@@ -239,8 +258,12 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                               minWidth: 1,
                             ),
                             onTap: () {
-                              _navigateToModifyNotification(
-                                  context, reminders[index]);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => EventNotificationScreen(
+                                        reminder: reminders[index],
+                                      )));
                             },
                           ),
                         );
@@ -258,7 +281,8 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                             Navigator.pop(context, widget.lunarEvent);
                           }
                         },
-                        child: Text('Save'),
+                        child: Text(DemoLocalizations.of(context)
+                            .localizedValues['save']),
                       ),
                       SizedBox(
                         width: 10,
@@ -267,7 +291,8 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: Text('Cancel'),
+                        child: Text(DemoLocalizations.of(context)
+                            .localizedValues['cancel']),
                       ),
                     ],
                   ),
@@ -280,15 +305,24 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
     );
   }
 
-  String getNotificationTitle(Reminder reminder) {
-    return reminder.method == ReminderMethod.POPUP ? 'Notification' : 'Email';
+  String getNotificationTitle(BuildContext context, Reminder reminder) {
+    return reminder.method == ReminderMethod.POPUP
+        ? DemoLocalizations.of(context)
+            .localizedValues['calendar_reminder_notification']
+        : DemoLocalizations.of(context)
+            .localizedValues['calendar_reminder_email'];
   }
 
-  String getNotificationSubtitle(Reminder reminder) {
+  String getNotificationSubtitle(BuildContext context, Reminder reminder) {
     return (reminder.count?.toString() ?? "1") +
         ' ' +
-        (reminder.type == ReminderType.DAY ? "days" : "weeks") +
-        ' before at ' +
+        (reminder.type == ReminderType.DAY
+            ? DemoLocalizations.of(context)
+                .localizedValues['calendar_reminder_days']
+            : DemoLocalizations.of(context)
+                .localizedValues['calendar_reminder_weeks']) +
+        DemoLocalizations.of(context)
+            .localizedValues['calendar_reminder_before_at'] +
         reminder.time;
   }
 
@@ -351,17 +385,5 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
     if (null != result) {
       this.reminders.add(result);
     }
-  }
-
-  void _navigateToModifyNotification(
-      BuildContext context, Reminder reminder) async {
-    await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => EventNotificationScreen(
-                  reminder: reminder,
-                )));
-    // For some reason, Navigator push does not trigger setState
-    setState(() {});
   }
 }

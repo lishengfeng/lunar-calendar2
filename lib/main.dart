@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lunarcalendar/ui/screens/root_screen.dart';
 import "package:lunarcalendar/ui/screens/walk_screen.dart";
+import 'package:lunarcalendar/utils/demo_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -19,7 +21,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Lunar Calendar',
+      onGenerateTitle: (BuildContext context) => DemoLocalizations.of(context).localizedValues['title'],
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         // This is the theme of your application.
@@ -41,6 +43,15 @@ class MyApp extends StatelessWidget {
 //        '/main': (BuildContext context) => new MainScreen(),
       },
       home: _handleCurrentScreen(),
+      localizationsDelegates: [
+        const DemoLocalizationsDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('en'), // English
+        const Locale('zh'),
+      ],
     );
   }
 

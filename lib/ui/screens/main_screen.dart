@@ -16,6 +16,7 @@ import 'package:intl/intl.dart';
 import 'package:lunarcalendar/models/lunar_event.dart';
 import 'package:lunarcalendar/ui/screens/lunar_event_screen.dart';
 import 'package:lunarcalendar/utils/auth.dart';
+import 'package:lunarcalendar/utils/demo_localizations.dart';
 import 'package:lunarcalendar/utils/lunar_solar_converter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -38,11 +39,12 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   void _select(Choice choice) {
     switch (choice.title) {
-      case 'Import':
+      case 'import':
         loadCalendars().then((Map<String, String> map) {
           if (map.length == 0) {
             Fluttertoast.showToast(
-              msg: "There is no calendar found",
+              msg: DemoLocalizations.of(context)
+                  .localizedValues['no_calendars_found'],
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.BOTTOM,
             );
@@ -51,7 +53,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 context: context,
                 builder: (BuildContext context) {
                   return SimpleDialog(
-                    title: Text('Choose an existing lunar calendar'),
+                    title: Text(DemoLocalizations.of(context)
+                        .localizedValues['choose_a_lunar_calendar']),
                     children: map.entries.map<SimpleDialogOption>((entry) {
                       return SimpleDialogOption(
                         child: Text(entry.value),
@@ -66,13 +69,14 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           }
         }).catchError((e) {
           Fluttertoast.showToast(
-            msg: "Got error: ${e.error}.",
+            msg: DemoLocalizations.of(context).localizedValues['got_error'] +
+                ": ${e.error}.",
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.BOTTOM,
           );
         });
         break;
-      case 'Export':
+      case 'export':
         exportEvents();
         break;
       default:
@@ -87,7 +91,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     lunarEvents = new SortedList((a, b) => a.compareTo(b));
     tryLoadLunarEventsFromFile();
     FirebaseAdMob.instance.initialize(appId: getAppId());
-    _bannerAd = createBannerAd()..load()..show();
+    _bannerAd = createBannerAd()
+      ..load()
+      ..show();
   }
 
   @override
@@ -121,19 +127,20 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Lunar Calendar'),
+          title: Text(DemoLocalizations.of(context).localizedValues['title']),
           actions: <Widget>[
             PopupMenuButton<Choice>(
               // overflow menu
               onSelected: _select,
-              itemBuilder: (BuildContext context) {
+              itemBuilder: (BuildContext _context) {
                 var list = List<PopupMenuEntry<Choice>>();
                 choices.asMap().forEach((index, choice) {
                   list.add(PopupMenuItem<Choice>(
                     value: choice,
                     child: ListTile(
                       leading: Icon(choice.icon),
-                      title: Text(choice.title),
+                      title: Text(DemoLocalizations.of(context)
+                          .localizedValues[choice.title]),
                     ),
                   ));
                   if (index != choices.length - 1) {
@@ -148,7 +155,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           ],
         ),
         body: Container(
-          child: _buildContent(),
+          child: _buildContent(context),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -167,20 +174,25 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(BuildContext context) {
     if (lunarEvents.length == 0) {
       return new Center(
-        child: Text('You do not have any events yet. Please try to add some.'),
+        child: Text(DemoLocalizations.of(context)
+            .localizedValues['no_events_try_to_add_some']),
       );
     } else {
       return ListView.builder(
           itemCount: lunarEvents.length,
-          itemBuilder: (context, index) {
+          itemBuilder: (_context, index) {
             final item = lunarEvents[index];
             return Card(
               child: ListTile(
                 title: Text(item.summary),
-                subtitle: Text(item.start + ' to ' + item.end),
+                subtitle: Text(item.start +
+                    ' ' +
+                    DemoLocalizations.of(context).localizedValues['to'] +
+                    ' ' +
+                    item.end),
                 trailing: MaterialButton(
                   onPressed: () {
                     lunarEvents.removeAt(index);
@@ -195,7 +207,12 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                   minWidth: 1,
                 ),
                 onTap: () {
-                  _navigateToModifyLunarEvent(context, lunarEvents[index]);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LunarEventScreen(
+                                lunarEvent: lunarEvents[index],
+                              )));
                 },
               ),
             );
@@ -217,20 +234,10 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     }
   }
 
-  void _navigateToModifyLunarEvent(
-      BuildContext context, LunarEvent lunarEvent) async {
-    await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => LunarEventScreen(
-                  lunarEvent: lunarEvent,
-                )));
-    setState(() {});
-  }
-
   Future<Map<String, String>> loadCalendars() async {
     percentageDialog.update(
-      message: "Loading calendars",
+      message:
+          DemoLocalizations.of(context).localizedValues['loading_calendars'],
     );
     percentageDialog.show();
     if (googleSignIn.currentUser == null) {
@@ -241,7 +248,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         headers: await googleSignIn.currentUser.authHeaders);
     if (response.statusCode != 200) {
       Fluttertoast.showToast(
-        msg: "Google Calenndar API gave a ${response.statusCode} response.",
+        msg: DemoLocalizations.of(context)
+                .localizedValues['google_calendar_api_return_code'] +
+            response.statusCode.toString(),
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
       );
@@ -259,7 +268,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   Future<void> loadLunarEvents(String calendarId) async {
     percentageDialog.update(
-      message: "Loading lunar events",
+      message:
+          DemoLocalizations.of(context).localizedValues['loading_lunar_events'],
     );
     percentageDialog.show();
     if (googleSignIn.currentUser == null) {
@@ -281,7 +291,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           headers: authHeaders);
       if (response.statusCode != 200) {
         Fluttertoast.showToast(
-          msg: "Google Calenndar API gave a ${response.statusCode} response.",
+          msg: DemoLocalizations.of(context)
+                  .localizedValues['google_calendar_api_return_code'] +
+              response.statusCode.toString(),
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
         );
@@ -363,7 +375,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   Future<void> exportEvents() async {
     if (lunarEvents.length == 0) {
       Fluttertoast.showToast(
-        msg: "There are no lunar events to be exported.",
+        msg: DemoLocalizations.of(context)
+            .localizedValues['no_events_to_export'],
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
       );
@@ -371,7 +384,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     }
     percentageDialog.show();
     percentageDialog.update(
-        message: 'Syncing', progress: 0, maxProgress: 100.0);
+        message: DemoLocalizations.of(context).localizedValues['syncing'],
+        progress: 0,
+        maxProgress: 100.0);
     if (googleSignIn.currentUser == null) {
       await googleSignIn.signInSilently();
     }
@@ -385,7 +400,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         headers: authHeaders, body: body);
     if (response.statusCode != 200) {
       Fluttertoast.showToast(
-        msg: "Google Calenndar API gave a ${response.statusCode} response.",
+        msg: DemoLocalizations.of(context)
+                .localizedValues['google_calendar_api_return_code'] +
+            response.statusCode.toString(),
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
       );
@@ -672,6 +689,6 @@ class Choice {
 }
 
 const List<Choice> choices = <Choice>[
-  Choice(title: 'Import', icon: Icons.cloud_download),
-  Choice(title: 'Export', icon: Icons.backup),
+  Choice(title: 'import', icon: Icons.cloud_download),
+  Choice(title: 'export', icon: Icons.backup),
 ];
