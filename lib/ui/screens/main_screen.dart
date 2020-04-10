@@ -610,6 +610,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   // You can also test with your own ad unit IDs by registering your device as a
   // test device. Check the logs for your device's ID value.
+//  static const String testDevice = 'E238463BE7B0BA76C93DDE68FA93C067';
   static const String testDevice = null;
 
   static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
@@ -620,14 +621,14 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   );
 
   // TODO Add IOS IDs
-  static const ANDROID_APP_ID = 'ca-app-pub-4941610462008539~4614039721';
+  static const ANDROID_APP_ID = 'ca-app-pub-4941610462008539~8138351769';
   static const IOS_APP_ID = "";
 
   // This is test id
 //  static const ANDROID_AD_UNIT_BANNER =
 //      'ca-app-pub-3940256099942544/6300978111';
   static const ANDROID_AD_UNIT_BANNER =
-      'ca-app-pub-4941610462008539/7287416478';
+      'ca-app-pub-4941610462008539/9544014342';
   static const IOS_AD_UNIT_BANNER = "";
 
   String getAppId() {
