@@ -133,6 +133,7 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
                         onPressed: () {
                           if (_formKey.currentState.validate()) {
                             _formKey.currentState.save();
+                            widget.reminder.method = _reminderMethod;
                             Navigator.pop(context, widget.reminder);
                           }
                         },
@@ -163,7 +164,6 @@ class _EventNotificationScreenState extends State<EventNotificationScreen> {
   void _handleReminderMethodChange(ReminderMethod value) {
     setState(() {
       _reminderMethod = value;
-      widget.reminder.method = value;
     });
   }
 

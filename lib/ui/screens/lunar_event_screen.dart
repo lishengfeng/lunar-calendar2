@@ -278,6 +278,7 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
                         onPressed: () {
                           if (_formKey.currentState.validate()) {
                             _formKey.currentState.save();
+                            widget.lunarEvent.repeatType = _repeatType;
                             Navigator.pop(context, widget.lunarEvent);
                           }
                         },
@@ -369,7 +370,6 @@ class _LunarEventScreenState extends State<LunarEventScreen> {
   void _handleRepeatTypeChange(RepeatType value) {
     setState(() {
       _repeatType = value;
-      widget.lunarEvent.repeatType = value;
     });
   }
 
