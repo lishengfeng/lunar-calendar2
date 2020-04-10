@@ -7,6 +7,7 @@ import 'dart:convert' show json;
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -33,6 +34,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   static const String CALENDAR_API_URL =
       'https://www.googleapis.com/calendar/v3';
   var filePath;
+  var _bannerAd;
 
   void _select(Choice choice) {
     switch (choice.title) {
@@ -84,11 +86,14 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     lunarEvents = new SortedList((a, b) => a.compareTo(b));
     tryLoadLunarEventsFromFile();
+    FirebaseAdMob.instance.initialize(appId: getAppId());
+    _bannerAd = createBannerAd()..load()..show();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _bannerAd?.dispose();
     super.dispose();
   }
 
@@ -152,6 +157,13 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           child: Icon(Icons.add),
         ),
       ),
+      builder: (BuildContext context, Widget widget) {
+        final mediaQuery = MediaQuery.of(context);
+        return Padding(
+          child: widget,
+          padding: EdgeInsets.only(bottom: getSmartBannerHeight(mediaQuery)),
+        );
+      },
     );
   }
 
@@ -577,6 +589,78 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         }
       }
     }
+  }
+
+  // You can also test with your own ad unit IDs by registering your device as a
+  // test device. Check the logs for your device's ID value.
+  static const String testDevice = null;
+
+  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+    testDevices: testDevice != null ? <String>[testDevice] : null,
+    keywords: <String>['lunar', 'calendar', 'tool'],
+    childDirected: true,
+    nonPersonalizedAds: true,
+  );
+
+  // TODO Add IOS IDs
+  static const ANDROID_APP_ID = 'ca-app-pub-4941610462008539~4614039721';
+  static const IOS_APP_ID = "";
+
+  // This is test id
+//  static const ANDROID_AD_UNIT_BANNER =
+//      'ca-app-pub-3940256099942544/6300978111';
+  static const ANDROID_AD_UNIT_BANNER =
+      'ca-app-pub-4941610462008539/7287416478';
+  static const IOS_AD_UNIT_BANNER = "";
+
+  String getAppId() {
+    if (Platform.isIOS) {
+      return IOS_APP_ID;
+    } else if (Platform.isAndroid) {
+      return ANDROID_APP_ID;
+    }
+    return null;
+  }
+
+  String getBannerAdUnitId() {
+    if (Platform.isIOS) {
+      return IOS_AD_UNIT_BANNER;
+    } else if (Platform.isAndroid) {
+      return ANDROID_AD_UNIT_BANNER;
+    }
+    return null;
+  }
+
+  BannerAd createBannerAd() {
+    return BannerAd(
+      adUnitId: getBannerAdUnitId(),
+      size: AdSize.banner,
+      targetingInfo: targetingInfo,
+      listener: (MobileAdEvent event) {
+        print("BannerAd event $event");
+      },
+    );
+  }
+
+  // Used to avoid banner overlapping with floatingActionButton
+  double getSmartBannerHeight(MediaQueryData mediaQuery) {
+    // https://developers.google.com/admob/android/banner#smart_banners
+    if (Platform.isAndroid) {
+      if (mediaQuery.size.height > 720) return 90.0;
+      if (mediaQuery.size.height > 400) return 50.0;
+      return 32.0;
+    }
+    // https://developers.google.com/admob/ios/banner#smart_banners
+    // Smart Banners on iPhones have a height of 50 points in portrait and 32 points in landscape.
+    // On iPads, height is 90 points in both portrait and landscape.
+    if (Platform.isIOS) {
+      // TODO use https://pub.dartlang.org/packages/device_info to detect iPhone/iPad?
+      // if (iPad) return 90.0;
+      if (mediaQuery.orientation == Orientation.portrait) return 50.0;
+      return 32.0;
+    }
+    // No idea, just return a common value.
+    return 50.0;
   }
 }
 
