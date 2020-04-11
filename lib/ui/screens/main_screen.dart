@@ -430,6 +430,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
     var eventDone = 0;
 
+    List<String> repeatBodyList = List();
     for (var e in lunarEvents) {
       if (e.summary.isEmpty) {
         continue;
@@ -463,22 +464,26 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       publishDone(eventDone, totalEvents);
       if (e.repeatType != RepeatType.NO_REPEAT) {
         for (int x = 0; x < e.repeat; x++) {
-          eventDone++;
           solarStart = getSolar(lunarStart, e.repeatType, x + 1);
           solarEnd = getSolar(lunarEnd, e.repeatType, x + 1);
           if (solarStart == null || solarEnd == null) {
+            eventDone++;
             publishDone(eventDone, totalEvents);
             break;
           }
           event = getEvent(e, solarStart, solarEnd, timeFormatter);
           body = json.encode(event);
-          response = await http.post(
-              CALENDAR_API_URL + '/calendars/' + calendarId + '/events',
-              headers: authHeaders,
-              body: body);
-          publishDone(eventDone, totalEvents);
+          repeatBodyList.add(body);
         }
       }
+    }
+    for(String body in repeatBodyList) {
+      eventDone++;
+      response = await http.post(
+          CALENDAR_API_URL + '/calendars/' + calendarId + '/events',
+          headers: authHeaders,
+          body: body);
+      publishDone(eventDone, totalEvents);
     }
   }
 
