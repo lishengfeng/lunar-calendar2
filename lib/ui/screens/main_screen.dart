@@ -628,14 +628,14 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   // TODO Add IOS IDs
   static const ANDROID_APP_ID = 'ca-app-pub-4941610462008539~8138351769';
-  static const IOS_APP_ID = "";
+  static const IOS_APP_ID = "ca-app-pub-4941610462008539~4723658859";
 
   // This is test id
 //  static const ANDROID_AD_UNIT_BANNER =
 //      'ca-app-pub-3940256099942544/6300978111';
   static const ANDROID_AD_UNIT_BANNER =
       'ca-app-pub-4941610462008539/9544014342';
-  static const IOS_AD_UNIT_BANNER = "";
+  static const IOS_AD_UNIT_BANNER = "ca-app-pub-4941610462008539/7429659345";
 
   String getAppId() {
     if (Platform.isIOS) {

@@ -34,5 +34,7 @@
 	<string>1:873383764909:ios:79fe77efb0f6a04cc47724</string>
 	<key>DATABASE_URL</key>
 	<string>https://lunar-calendar-s-1561836454167.firebaseio.com</string>
+	<key>ADMOB_APP_ID</key>
+	<string>ca-app-pub-4941610462008539~4723658859</string>
 </dict>
 </plist>
