@@ -48,11 +48,9 @@
     		<string>Editor</string>
     		<key>CFBundleURLSchemes</key>
     		<array>
-                <string>com.googleusercontent.apps.873383764909-r1bjsiimjs54sd6mffsb0a5nf5edkl87</string>
+                <string>com.googleusercontent.apps.873383764909-7nv4r2dnpgi0lvu5d3q93rrrbpo1ofjb</string>
     		</array>
     	</dict>
     </array>
-    <key>GADApplicationIdentifier</key>
-    <string>ca-app-pub-4941610462008539~4723658859</string>
 </dict>
 </plist>
