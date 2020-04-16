@@ -86,7 +86,7 @@ class _SignInPageState extends State<SignInScreen> {
                     SizedBox(
                       height: 50.0,
                     ),
-                    _signInButton(),
+                    _signInButton(context),
                   ],
                 ),
               ),
@@ -97,7 +97,7 @@ class _SignInPageState extends State<SignInScreen> {
     );
   }
 
-  Widget _signInButton() {
+  Widget _signInButton(BuildContext context) {
     return OutlineButton(
       splashColor: Colors.grey,
       onPressed: () {

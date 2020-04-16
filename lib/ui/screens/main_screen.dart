@@ -82,6 +82,11 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           percentageDialog.hide();
         });
         break;
+      case 'signout':
+        signOutGoogle().then((_) {
+          Navigator.pushNamedAndRemoveUntil(context, "/root", (r) => false);
+        });
+        break;
       default:
         break;
     }
@@ -125,8 +130,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    percentageDialog = ProgressDialog(context,
-        type: ProgressDialogType.Download);
+    percentageDialog =
+        ProgressDialog(context, type: ProgressDialogType.Download);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -478,7 +483,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         }
       }
     }
-    for(String body in repeatBodyList) {
+    for (String body in repeatBodyList) {
       eventDone++;
       response = await http.post(
           CALENDAR_API_URL + '/calendars/' + calendarId + '/events',
@@ -699,4 +704,5 @@ class Choice {
 const List<Choice> choices = <Choice>[
   Choice(title: 'import', icon: Icons.cloud_download),
   Choice(title: 'export', icon: Icons.backup),
+  Choice(title: 'signout', icon: Icons.exit_to_app),
 ];
