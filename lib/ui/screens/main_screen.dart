@@ -128,6 +128,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     percentageDialog = ProgressDialog(context,
         type: ProgressDialogType.Download);
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           title: Text(DemoLocalizations.of(context).localizedValues['title']),
