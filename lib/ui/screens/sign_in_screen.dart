@@ -103,7 +103,7 @@ class _SignInPageState extends State<SignInScreen> {
       onPressed: () {
         signInWithGoogle().then((bool success) {
           if (success) {
-            Navigator.of(context).pushNamed("/root");
+            Navigator.of(context).pushNamedAndRemoveUntil("/root", (r) => false);
           }
         });
       },
