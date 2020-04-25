@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>873383764909-7nv4r2dnpgi0lvu5d3q93rrrbpo1ofjb.apps.googleusercontent.com</string>
+	<string>873383764909-douukrjrqhu2ke3hl61iivh9g8ceiv6v.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.873383764909-7nv4r2dnpgi0lvu5d3q93rrrbpo1ofjb</string>
+	<string>com.googleusercontent.apps.873383764909-douukrjrqhu2ke3hl61iivh9g8ceiv6v</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>873383764909-r228b1mmbu6ism7ji3s0ic5n9mpmrtr0.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDvX7e9PgSFSlb8l9REjyq145P3NN6lV98</string>
+	<string>AIzaSyBgznM7UBMSQEW89ZWVC2yK7vCX6vUKli0</string>
 	<key>GCM_SENDER_ID</key>
 	<string>873383764909</string>
 	<key>PLIST_VERSION</key>
@@ -31,7 +31,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:873383764909:ios:6144370bd04ae06cc47724</string>
+	<string>1:873383764909:ios:27c1305bd57659cdc47724</string>
 	<key>DATABASE_URL</key>
 	<string>https://lunar-calendar-s-1561836454167.firebaseio.com</string>
 	<key>ADMOB_APP_ID</key>
